@@ -1,0 +1,210 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Ableton MajorVersion="5" MinorVersion="10.0_377" SchemaChangeCount="3" Creator="Ableton Live 10.1.30" Revision="fc0fea66dc1b6378c41d79c15fae47660f1ff244">
+  <LiveSet>
+    <NextPointeeId Value="20565" />
+    <OverwriteProtectionNumber Value="2561" />
+    <LomId Value="0" />
+    <LomIdView Value="0" />
+    <GlobalQuantisation Value="4" />
+    <AutoQuantisation Value="0" />
+    <SmpteFormat Value="0" />
+    <ViewStateFxSlotCount Value="4" />
+    <ViewStateSessionMixerHeight Value="120" />
+    <TracksListWrapper Value="0" />
+    <VisibleTracksListWrapper Value="0" />
+    <ReturnTracksListWrapper Value="0" />
+    <ScenesListWrapper Value="0" />
+    <CuePointsListWrapper Value="0" />
+    <ChooserBar Value="0" />
+    <CrossfadeCurve Value="2" />
+    <LatencyCompensation Value="2" />
+    <HighlightedTrackIndex Value="1" />
+    <ColorSequenceIndex Value="0" />
+    <TrackHeaderWidth Value="93" />
+    <ViewStateLaunchPanel Value="false" />
+    <ViewStateEnvelopePanel Value="false" />
+    <ViewStateSamplePanel Value="true" />
+    <SoloOrPflSavedValue Value="true" />
+    <SoloInPlace Value="true" />
+    <AutomationMode Value="false" />
+    <SnapAutomationToGrid Value="true" />
+    <ArrangementOverdub Value="false" />
+    <MidiFoldIn Value="false" />
+    <MidiPrelisten Value="false" />
+    <UseWarperLegacyHiQMode Value="false" />
+    <ShowVideoWindow Value="true" />
+    <ViewStateArrangerHasDetail Value="false" />
+    <ViewStateSessionHasDetail Value="true" />
+    <ViewStateDetailIsSample Value="true" />
+    <MasterTrack>
+      <LomId Value="0" />
+      <LomIdView Value="0" />
+      <ColorIndex Value="161" />
+      <TrackGroupId Value="-1" />
+      <DevicesListWrapper Value="0" />
+      <ClipSlotsListWrapper Value="0" />
+      <IsContentSelected Value="false" />
+      <EnvelopeModePreferred Value="false" />
+      <TrackUnfolded Value="false" />
+      <TrackDelay>
+        <Value Value="0" />
+        <IsValueSampleBased Value="false" />
+      </TrackDelay>
+      <Name>
+        <EffectiveName Value="Master" />
+        <UserName Value="" />
+        <Annotation Value="" />
+        <MemorizedFirstClipName Value="" />
+      </Name>
+    </MasterTrack>
+    <Tracks>
+      <MidiTrack Id="12">
+        <LomId Value="0" />
+        <LomIdView Value="0" />
+        <ColorIndex Value="150" />
+        <TrackGroupId Value="-1" />
+        <DevicesListWrapper Value="0" />
+        <ClipSlotsListWrapper Value="0" />
+        <SavedPlayingSlot Value="-1" />
+        <SavedPlayingOffset Value="0" />
+        <VelocityDetail Value="0" />
+        <PostProcessFreezeClips Value="0" />
+        <ReWireSlaveMidiTargetId Value="0" />
+        <IsContentSelected Value="false" />
+        <EnvelopeModePreferred Value="false" />
+        <TrackUnfolded Value="true" />
+        <Freeze Value="false" />
+        <NeedArrangerRefreeze Value="true" />
+        <TrackDelay>
+          <Value Value="0" />
+          <IsValueSampleBased Value="false" />
+        </TrackDelay>
+        <Name>
+          <EffectiveName Value="1-Analog" />
+          <UserName Value="" />
+          <Annotation Value="" />
+          <MemorizedFirstClipName Value="" />
+        </Name>
+      </MidiTrack>
+      <AudioTrack Id="8">
+        <LomId Value="0" />
+        <LomIdView Value="0" />
+        <ColorIndex Value="163" />
+        <TrackGroupId Value="-1" />
+        <DevicesListWrapper Value="0" />
+        <ClipSlotsListWrapper Value="0" />
+        <SavedPlayingSlot Value="-1" />
+        <SavedPlayingOffset Value="0" />
+        <VelocityDetail Value="0" />
+        <PostProcessFreezeClips Value="0" />
+        <IsContentSelected Value="true" />
+        <EnvelopeModePreferred Value="false" />
+        <TrackUnfolded Value="true" />
+        <Freeze Value="false" />
+        <NeedArrangerRefreeze Value="true" />
+        <TrackDelay>
+          <Value Value="0" />
+          <IsValueSampleBased Value="false" />
+        </TrackDelay>
+        <Name>
+          <EffectiveName Value="2-SAS DrumLoop" />
+          <UserName Value="" />
+          <Annotation Value="" />
+          <MemorizedFirstClipName Value="SAS DrumLoop" />
+        </Name>
+      </AudioTrack>
+      <ReturnTrack Id="2">
+        <LomId Value="0" />
+        <LomIdView Value="0" />
+        <ColorIndex Value="145" />
+        <TrackGroupId Value="-1" />
+        <DevicesListWrapper Value="0" />
+        <ClipSlotsListWrapper Value="0" />
+        <IsContentSelected Value="false" />
+        <EnvelopeModePreferred Value="false" />
+        <TrackUnfolded Value="false" />
+        <TrackDelay>
+          <Value Value="0" />
+          <IsValueSampleBased Value="false" />
+        </TrackDelay>
+        <Name>
+          <EffectiveName Value="A-Reverb" />
+          <UserName Value="" />
+          <Annotation Value="" />
+          <MemorizedFirstClipName Value="" />
+        </Name>
+      </ReturnTrack>
+      <ReturnTrack Id="3">
+        <LomId Value="0" />
+        <LomIdView Value="0" />
+        <ColorIndex Value="144" />
+        <TrackGroupId Value="-1" />
+        <DevicesListWrapper Value="0" />
+        <ClipSlotsListWrapper Value="0" />
+        <IsContentSelected Value="false" />
+        <EnvelopeModePreferred Value="false" />
+        <TrackUnfolded Value="false" />
+        <TrackDelay>
+          <Value Value="0" />
+          <IsValueSampleBased Value="false" />
+        </TrackDelay>
+        <Name>
+          <EffectiveName Value="B-Delay" />
+          <UserName Value="" />
+          <Annotation Value="" />
+          <MemorizedFirstClipName Value="" />
+        </Name>
+      </ReturnTrack>
+    </Tracks>
+    <ContentSplitterProperties>
+      <Open Value="true" />
+      <Size Value="35" />
+    </ContentSplitterProperties>
+    <SequencerNavigator>
+      <BeatTimeHelper>
+        <CurrentZoom Value="0.2549450549450549" />
+      </BeatTimeHelper>
+      <ScrollerPos X="0" Y="0" />
+      <ClientSize X="598" Y="627" />
+    </SequencerNavigator>
+    <TimeSelection>
+      <AnchorTime Value="0" />
+      <OtherTime Value="16" />
+    </TimeSelection>
+    <ScaleInformation>
+      <RootNote Value="0" />
+      <Name Value="Major" />
+    </ScaleInformation>
+    <Grid>
+      <FixedNumerator Value="1" />
+      <FixedDenominator Value="16" />
+      <GridIntervalPixel Value="20" />
+      <Ntoles Value="2" />
+      <SnapToGrid Value="True" />
+      <Fixed Value="False" />
+    </Grid>
+    <AutoColorPickerForPlayerAndGroupTracks>
+      <NextColorIndex Value="1" />
+    </AutoColorPickerForPlayerAndGroupTracks>
+    <AutoColorPickerForReturnAndMasterTracks>
+      <NextColorIndex Value="10" />
+    </AutoColorPickerForReturnAndMasterTracks>
+    <ViewStates>
+      <SessionIO Value="1" />
+      <SessionSends Value="1" />
+      <SessionReturns Value="1" />
+      <SessionMixer Value="1" />
+      <SessionTrackDelay Value="0" />
+      <SessionCrossFade Value="0" />
+      <SessionShowOverView Value="0" />
+      <ArrangerIO Value="1" />
+      <ArrangerReturns Value="1" />
+      <ArrangerMixer Value="1" />
+      <ArrangerTrackDelay Value="0" />
+      <ArrangerShowOverView Value="1" />
+    </ViewStates>
+    <VideoWindowRect Top="-2147483648" Left="-2147483648" Bottom="-2147483648" Right="-2147483648" />
+    <ViewData Value="{}" />
+    <Annotation Value="" />
+  </LiveSet>
+</Ableton>
