@@ -1,3 +1,0 @@
-C:/Users/ryand/Dev/CPP/avc/build/CMakeFiles/avc.dir
-C:/Users/ryand/Dev/CPP/avc/build/CMakeFiles/ALL_BUILD.dir
-C:/Users/ryand/Dev/CPP/avc/build/CMakeFiles/ZERO_CHECK.dir
