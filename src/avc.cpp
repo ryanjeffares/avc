@@ -16,7 +16,13 @@ int main(int argc, char* argv[])
 		return 0;
 	}
 	else {
-		
+		auto output = path;
+		output.erase(output.end() - 4, output.end());
+		output += ".xml";
+		std::cout << "Output: " << output << std::endl;
+		avc::AlsIOHandler ioHandler(path, output);
+		ioHandler.decompress();
+		ioHandler.storeXmlData();
 	}
 	std::cin.get();
 	return 0;
