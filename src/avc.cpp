@@ -5,6 +5,7 @@
 
 int main(int argc, char* argv[])
 {
+	auto start = std::chrono::high_resolution_clock::now();
 	if (argc != 2) {
 		std::cout << "Expected 1 argument: path to .als file, stopping exection." << std::endl;
 		return 0;
@@ -23,7 +24,12 @@ int main(int argc, char* argv[])
 		avc::AlsIOHandler ioHandler(path, output);
 		ioHandler.decompress();
 		ioHandler.storeXmlData();
+		ioHandler.writeToXml();
+		ioHandler.writeToAls();
 	}
+	auto end = std::chrono::high_resolution_clock::now();
+	auto dur = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+	std::cout << "Completed in " << dur << " ms" << std::endl;
 	std::cin.get();
 	return 0;
 }

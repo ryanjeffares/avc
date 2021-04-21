@@ -12,6 +12,9 @@
 
 namespace avc {
 
+	using namespace tinyxml2;
+	using namespace ableton_data_types;
+
 	class AlsIOHandler
 	{
 
@@ -23,13 +26,14 @@ namespace avc {
 		void decompress();
 		void storeXmlData();
 		void writeToXml();
+		void writeToAls();
 	
-	private:
+	private:		
 
-		void getValues(tinyxml2::XMLNode* node);
-		void getTracks(tinyxml2::XMLNode* node);
-		void getMasterTrack(tinyxml2::XMLNode* node);
-		void getViewStates(tinyxml2::XMLNode* node);
+		void getValues(XMLNode* node);
+		void getTracks(XMLElement* node);
+		void getTrackInfo(std::shared_ptr<Track>& track, XMLNode* node);
+		void getMasterTrack(XMLElement* node);
 
 		const std::string inputPath, outputPath;
 		std::string setName;

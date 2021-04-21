@@ -1,9 +1,12 @@
 #pragma once
 #include <string>
 #include <map>
+#include "../../deps/tinyxml2/tinyxml2.h"
 
 namespace avc {
 	namespace ableton_data_types {
+
+		using namespace tinyxml2;
 
 		class ViewStates
 		{
@@ -11,7 +14,14 @@ namespace avc {
 			
 			std::map<std::string, int> elements;
 
-			void createXmlNode();
+			void createXmlNode(XMLDocument& doc, XMLNode* parent) const {
+				auto node = doc.NewElement("ViewStates");
+				for (auto& val : elements) {
+					auto el = node->InsertNewChildElement(val.first.c_str());
+					el->SetAttribute("Value", val.second);
+				}
+				parent->InsertEndChild(node);
+			}
 
 		};
 
