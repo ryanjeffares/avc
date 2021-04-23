@@ -1,13 +1,8 @@
 #pragma once
+#include "avc.h"
 #include "ableton_data_types/AbletonHeader.h"
 #include "ableton_data_types/Track.h"
-#include "ableton_data_types/SmallNodes.h"
 #include "ableton_data_types/ViewStates.h"
-#include "../deps/tinyxml2/tinyxml2.h"
-#include <string>
-#include <map>
-#include <memory>
-#include <vector>
 
 namespace avc {
 
@@ -30,16 +25,18 @@ namespace avc {
 
 		std::shared_ptr<ableton_data_types::AbletonHeader> abletonHeader;
 
-		std::shared_ptr<ableton_data_types::ContentSplitterProperties> contentSplitterProperties;
-		std::shared_ptr<ableton_data_types::SequencerNavigator> sequencerNavigator;
-		std::shared_ptr<ableton_data_types::TimeSelection> timeSelection;
-		std::shared_ptr<ableton_data_types::ScaleInformation> scaleInformation;
-		std::shared_ptr<ableton_data_types::Grid> grid;
-		std::shared_ptr<ableton_data_types::Transport> transport;
-		std::shared_ptr<ableton_data_types::ViewStates> viewStates;
+		std::unique_ptr<ableton_data_types::ContentSplitterProperties> contentSplitterProperties;
+		std::unique_ptr<ableton_data_types::SequencerNavigator> sequencerNavigator;
+		std::unique_ptr<ableton_data_types::TimeSelection> timeSelection;
+		std::unique_ptr<ableton_data_types::ScaleInformation> scaleInformation;
+		std::unique_ptr<ableton_data_types::Grid> grid;
+		std::unique_ptr<ableton_data_types::Transport> transport;
+		std::unique_ptr<ableton_data_types::ViewStates> viewStates;
 
-		std::vector<std::shared_ptr<ableton_data_types::Track>> tracks;
-		std::shared_ptr<ableton_data_types::Track> masterTrack;
+		std::vector<ableton_data_types::SendsPre> sendsPre;
+
+		std::vector<ableton_data_types::Track> tracks;
+		std::unique_ptr<ableton_data_types::Track> masterTrack, preHearTrack;
 
 	private:
 		std::string name, xmlVersion, xmlEncoding;

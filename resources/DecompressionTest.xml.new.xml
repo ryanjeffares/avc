@@ -141,6 +141,24 @@
                 <MemorizedFirstClip Value=""/>
             </Name>
         </MasterTrack>
+        <PreHearTrack>
+            <ColorIndex Value="0"/>
+            <LomId Value="0"/>
+            <LomIdView Value="0"/>
+            <TrackGroupId Value="-1"/>
+            <ClipSlotsListWrapper LomId="0"/>
+            <DevicesListWrapper LomId="0"/>
+            <EnvelopeModePreferred Value="false"/>
+            <IsContentSelected Value="false"/>
+            <TrackUnfolded Value="false"/>
+            <ViewData Value="{}"/>
+            <Name>
+                <EffectiveName Value="Master"/>
+                <UserName Value=""/>
+                <Annotation Value=""/>
+                <MemorizedFirstClip Value=""/>
+            </Name>
+        </PreHearTrack>
         <ViewData Value="{}"/>
         <Annotation Value=""/>
         <VideoWindowRect Bottom="-2147483648" Left="-2147483648" Right="-2147483648" Top="-2147483648"/>
@@ -197,5 +215,9 @@
             <MetronomeClickDuration Value="0"/>
             <DrawMode Value="false"/>
         </Transport>
+        <SendsPre>
+            <SendsPreBool Id="0" Value="false"/>
+            <SendsPreBool Id="1" Value="false"/>
+        </SendsPre>
     </LiveSet>
 </Ableton>

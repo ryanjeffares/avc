@@ -1,8 +1,5 @@
 #pragma once
-#include <string>
-#include <memory>
-#include <map>
-#include "../../deps/tinyxml2/tinyxml2.h"
+#include "../avc.h"
 #include "SmallNodes.h"
 
 namespace avc {
@@ -16,10 +13,11 @@ namespace avc {
 		public:
 			enum TrackType
 			{
-				MIDI_TRACK, AUDIO_TRACK, RETURN_TRACK, MASTER_TRACK
+				MIDI_TRACK, AUDIO_TRACK, RETURN_TRACK, MASTER_TRACK, PRE_HEAR_TRACK
 			};			
 
 			Track(int _id, TrackType _type) : id(_id), type(_type) {}				
+			Track(TrackType _type) : type(_type) {}				
 
 			int id;
 			std::map<std::string, int> intValues, intValuesLomId;
@@ -44,9 +42,12 @@ namespace avc {
 					case RETURN_TRACK:
 						typeName = "ReturnTrack";
 						break;
+					case PRE_HEAR_TRACK:
+						typeName = "PreHearTrack";
+						break;
 				}
 				auto node = doc.NewElement(typeName);
-				if (type != MASTER_TRACK) {
+				if (type != MASTER_TRACK && type != PRE_HEAR_TRACK) {
 					node->SetAttribute("Id", id);
 				}
 				for (auto& iVal : intValues) {

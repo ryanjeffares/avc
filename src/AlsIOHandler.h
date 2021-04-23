@@ -1,13 +1,4 @@
 #pragma once
-#include <fstream>
-#include <iostream>
-#include <string>
-#include <sstream>
-#include <map>
-#include <boost/iostreams/filter/gzip.hpp>
-#include <boost/iostreams/filtering_streambuf.hpp>
-#include <boost/iostreams/copy.hpp>
-#include "../deps/tinyxml2/tinyxml2.h"
 #include "AbletonLiveSet.h"
 
 namespace avc {
@@ -32,8 +23,10 @@ namespace avc {
 
 		void getValues(XMLNode* node);
 		void getTracks(XMLElement* node);
-		void getTrackInfo(std::shared_ptr<Track>& track, XMLNode* node);
+		void getTrackInfo(Track& track, XMLNode* node);
+		void getTrackInfo(std::unique_ptr<Track>& track, XMLNode* node);
 		void getMasterTrack(XMLElement* node);
+		void getPreHearTrack(XMLElement* node);
 
 		const std::string inputPath, outputPath;
 		std::string setName;

@@ -21,14 +21,14 @@ namespace avc {
 		outputXml.open(outputPath);
 		copy(input, outputXml);
 		outputXml.close();
-		std::cout << "Wrote .als data to " << outputPath << std::endl;
+		LOG("Wrote .als data to %s", outputPath.c_str());
 	}
 
 	void AlsIOHandler::storeXmlData() {			
 		XMLDocument xmlDoc;
 		auto loaded = xmlDoc.LoadFile(outputPath.c_str());
 		if (loaded == XML_SUCCESS) {
-			std::cout << "Successfully loaded XML file." << std::endl;
+			LOG("Successfully loaded XML file.");
 			auto rootNode = xmlDoc.FirstChildElement();
 			int majorVersion, schema;
 			const char* minorVersion;
@@ -44,9 +44,10 @@ namespace avc {
 			getValues(rootNode->FirstChild());
 			getTracks(rootNode->FirstChild()->FirstChildElement("Tracks"));
 			getMasterTrack(rootNode->FirstChild()->FirstChildElement("MasterTrack"));
+			getPreHearTrack(rootNode->FirstChild()->FirstChildElement("PreHearTrack"));
 		}
 		else {
-			std::cout << "Problem loading XML File: " << loaded << std::endl;
+			LOG("Problem loading XML File: %d", loaded);
 		}		
 	}
 
@@ -65,7 +66,8 @@ namespace avc {
 			"ScaleInformation",
 			"Grid",			
 			"ViewStates",
-			"Transport"
+			"Transport",
+			"SendsPre"
 		};
 		while (currentElement != nullptr) {			
 			if (currentElement->NoChildren()) {
@@ -104,7 +106,7 @@ namespace avc {
 					videoRect.emplace("Right", right);
 				}
 				else {
-					std::cout << "Problem parsing element " << currentElement->Name() << std::endl;
+					LOG("Problem parsing element %s", currentElement->Name());
 				}						
 			}
 			else {
@@ -125,7 +127,7 @@ namespace avc {
 							currentElement->FirstChildElement("Open")->QueryBoolAttribute("Value", &open);
 							int size;
 							currentElement->FirstChildElement("Size")->QueryIntAttribute("Value", &size);
-							abletonLiveSet->contentSplitterProperties = std::make_shared<ableton_data_types::ContentSplitterProperties>(open, size);
+							abletonLiveSet->contentSplitterProperties = std::make_unique<ableton_data_types::ContentSplitterProperties>(open, size);
 							break;
 						}
 						case 3: {
@@ -136,14 +138,14 @@ namespace avc {
 							currentElement->FirstChildElement("ScrollerPos")->QueryIntAttribute("Y", &spy);
 							currentElement->FirstChildElement("ClientSize")->QueryIntAttribute("X", &csx);
 							currentElement->FirstChildElement("ClientSize")->QueryIntAttribute("Y", &csy);
-							abletonLiveSet->sequencerNavigator = std::make_shared<ableton_data_types::SequencerNavigator>(zoom, spx, spy, csx, csy);
+							abletonLiveSet->sequencerNavigator = std::make_unique<ableton_data_types::SequencerNavigator>(zoom, spx, spy, csx, csy);
 							break;
 						}
 						case 4: {
 							int at, ot;
 							currentElement->FirstChildElement("AnchorTime")->QueryIntAttribute("Value", &at);
 							currentElement->FirstChildElement("OtherTime")->QueryIntAttribute("Value", &ot);
-							abletonLiveSet->timeSelection = std::make_shared<ableton_data_types::TimeSelection>(at, ot);
+							abletonLiveSet->timeSelection = std::make_unique<ableton_data_types::TimeSelection>(at, ot);
 							break;
 						}
 						case 5: {
@@ -151,7 +153,7 @@ namespace avc {
 							const char* n;
 							currentElement->FirstChildElement("RootNote")->QueryIntAttribute("Value", &r);
 							currentElement->FirstChildElement("Name")->QueryStringAttribute("Value", &n);
-							abletonLiveSet->scaleInformation = std::make_shared<ableton_data_types::ScaleInformation>(r, std::string(n));
+							abletonLiveSet->scaleInformation = std::make_unique<ableton_data_types::ScaleInformation>(r, std::string(n));
 							break;
 						}
 						case 6: {
@@ -163,11 +165,11 @@ namespace avc {
 							currentElement->FirstChildElement("Ntoles")->QueryIntAttribute("Value", &nt);
 							currentElement->FirstChildElement("SnapToGrid")->QueryBoolAttribute("Value", &s);
 							currentElement->FirstChildElement("Fixed")->QueryBoolAttribute("Value", &f);
-							abletonLiveSet->grid = std::make_shared<ableton_data_types::Grid>(fn, fd, gip, nt, s, f);
+							abletonLiveSet->grid = std::make_unique<ableton_data_types::Grid>(fn, fd, gip, nt, s, f);
 							break;
 						}
 						case 7: {
-							abletonLiveSet->viewStates = std::make_shared<ableton_data_types::ViewStates>();
+							abletonLiveSet->viewStates = std::make_unique<ableton_data_types::ViewStates>();
 							auto el = currentElement->FirstChildElement();
 							while (el != nullptr) {
 								int val;
@@ -191,13 +193,26 @@ namespace avc {
 							currentElement->FirstChildElement("PunchOut")->QueryBoolAttribute("Value", &po);
 							currentElement->FirstChildElement("MetronomeTickDuration")->QueryIntAttribute("Value", &m);
 							currentElement->FirstChildElement("DrawMode")->QueryBoolAttribute("Value", &d);
-							abletonLiveSet->transport = std::make_shared<ableton_data_types::Transport>(pnt, ls, ll, ct, m, lo, lis, pi, po, d);
+							abletonLiveSet->transport = std::make_unique<ableton_data_types::Transport>(pnt, ls, ll, ct, m, lo, lis, pi, po, d);
+							break;
+						}
+						case 9: {
+							auto el = currentElement->FirstChildElement();
+							while (el != nullptr) {
+								int i;
+								bool v;
+								el->QueryIntAttribute("Id", &i);
+								el->QueryBoolAttribute("Value", &v);
+								ableton_data_types::SendsPre sp(i, v);
+								abletonLiveSet->sendsPre.push_back(sp);
+								el = el->NextSiblingElement();
+							}
 							break;
 						}
 					}
 				}
 				catch (XMLError& e) {
-					std::cout << "Error parsing element " << currentElement->Name() << ", returned " << e << std::endl;
+					LOG("Error parsing element %s%s%d", currentElement->Name(), ", returned ", e);
 				}
 			}
 			currentElement = currentElement->NextSiblingElement();
@@ -210,33 +225,88 @@ namespace avc {
 			int id;
 			currentElement->QueryIntAttribute("Id", &id);
 			if (strcmp(currentElement->Name(), "MidiTrack") == 0) {
-				auto track = std::make_shared<Track>(id, Track::TrackType::MIDI_TRACK);
+				Track track(id, Track::TrackType::MIDI_TRACK);
 				getTrackInfo(track, currentElement);
 				abletonLiveSet->tracks.push_back(track);
 			}
 			else if (strcmp(currentElement->Name(), "AudioTrack") == 0) {
-				auto track = std::make_shared<Track>(id, Track::TrackType::AUDIO_TRACK);
+				Track track(id, Track::TrackType::AUDIO_TRACK);
 				getTrackInfo(track, currentElement);
 				abletonLiveSet->tracks.push_back(track);
 			}
 			else if (strcmp(currentElement->Name(), "ReturnTrack") == 0) {
-				auto track = std::make_shared<Track>(id, Track::TrackType::RETURN_TRACK);
+				Track track(id, Track::TrackType::RETURN_TRACK);
 				getTrackInfo(track, currentElement);
 				abletonLiveSet->tracks.push_back(track);
 			}
 			else {
-				std::cout << "Invalid track type found for " << currentElement->Name() << std::endl;
+				LOG("Invalid track type found for %s", currentElement->Name());
 			}
 			currentElement = currentElement->NextSiblingElement();
 		}
 	}
 
 	void AlsIOHandler::getMasterTrack(XMLElement* parent) {
-		abletonLiveSet->masterTrack = std::make_shared<Track>(0, Track::TrackType::MASTER_TRACK);
+		abletonLiveSet->masterTrack = std::make_unique<Track>(Track::TrackType::MASTER_TRACK);
 		getTrackInfo(abletonLiveSet->masterTrack, parent);
 	}
 
-	void AlsIOHandler::getTrackInfo(std::shared_ptr<Track>& track, XMLNode* parent) {
+	void AlsIOHandler::getPreHearTrack(XMLElement* parent) {
+		abletonLiveSet->preHearTrack = std::make_unique<Track>(Track::TrackType::PRE_HEAR_TRACK);
+		getTrackInfo(abletonLiveSet->preHearTrack, parent);
+	}
+
+	void AlsIOHandler::getTrackInfo(Track& track, XMLNode* parent) {
+		auto currentElement = parent->FirstChildElement();
+		while (currentElement != nullptr) {
+			if (currentElement->NoChildren()) {
+				int intVal;
+				bool boolVal;
+				const char* stringVal;
+				if (currentElement->QueryIntAttribute("LomId", &intVal) == XML_SUCCESS) {
+					track.intValuesLomId.emplace(currentElement->Name(), intVal);
+				}
+				else if (currentElement->QueryIntAttribute("Value", &intVal) == XML_SUCCESS) {
+					track.intValues.emplace(currentElement->Name(), intVal);
+				}
+				else if (currentElement->QueryBoolAttribute("Value", &boolVal) == XML_SUCCESS) {
+					track.boolValues.emplace(currentElement->Name(), boolVal);
+				}
+				else if (currentElement->QueryStringAttribute("Value", &stringVal) == XML_SUCCESS && strcmp(currentElement->Name(), "ViewData") == 0) {
+					track.viewData = std::string(stringVal);
+				}
+				else {
+					LOG("Unable to parse element %s from track %s, id: %i", currentElement->Name(), parent->Value(), track.id);
+				}
+			}
+			else {
+				if (strcmp(currentElement->Name(), "TrackDelay") == 0) {
+					int v;
+					bool s;
+					currentElement->FirstChildElement("Value")->QueryIntAttribute("Value", &v);
+					currentElement->FirstChildElement("IsValueSampleBased")->QueryBoolAttribute("Value", &s);
+					track.trackDelay = std::make_shared<TrackDelay>(v, s);
+				}
+				else if (strcmp(currentElement->Name(), "Name") == 0) {
+					const char* en;
+					const char* un;
+					const char* an;
+					const char* mn;
+					currentElement->FirstChildElement("EffectiveName")->QueryStringAttribute("Value", &en);
+					currentElement->FirstChildElement("UserName")->QueryStringAttribute("Value", &un);
+					currentElement->FirstChildElement("Annotation")->QueryStringAttribute("Value", &an);
+					currentElement->FirstChildElement("MemorizedFirstClipName")->QueryStringAttribute("Value", &mn);
+					track.name = std::make_shared<Name>(std::string(en), std::string(un), std::string(an), std::string(mn));
+				}
+				else {
+					LOG("Didn't parse node %s in track %s, ID %i, probably because you haven't implemented it.", currentElement->Name(), parent->Value(), track.id);
+				}
+			}
+			currentElement = currentElement->NextSiblingElement();
+		}
+	}
+
+	void AlsIOHandler::getTrackInfo(std::unique_ptr<Track>& track, XMLNode* parent) {
 		auto currentElement = parent->FirstChildElement();
 		while (currentElement != nullptr) {
 			if (currentElement->NoChildren()) {
@@ -256,7 +326,7 @@ namespace avc {
 					track->viewData = std::string(stringVal);
 				}
 				else {
-					std::cout << "Unable to parse element " << currentElement->Name() << " from track " << parent->Value() << " id: " << track->id << std::endl;
+					LOG("Unable to parse element %s from track %s, id: %i", currentElement->Name(), parent->Value(), track->id);
 				}
 			}
 			else {
@@ -279,7 +349,7 @@ namespace avc {
 					track->name = std::make_shared<Name>(std::string(en), std::string(un), std::string(an), std::string(mn));
 				}
 				else {
-					std::cout << "Didn't parse node " << currentElement->Name() << " in track " << parent->Value() << ", ID " << track->id << ", probably because you haven't implemented it." << std::endl;
+					LOG("Didn't parse node %s in track %s, ID %i, probably because you haven't implemented it.", currentElement->Name(), parent->Value(), track->id);
 				}
 			}
 			currentElement = currentElement->NextSiblingElement();
@@ -312,10 +382,11 @@ namespace avc {
 
 		auto trackNode = xmlDoc.NewElement("Tracks");
 		for (auto& t : abletonLiveSet->tracks) {
-			t->createXmlNode(xmlDoc, trackNode);
+			t.createXmlNode(xmlDoc, trackNode);
 		}
 		liveSetNode->InsertEndChild(trackNode);
 		abletonLiveSet->masterTrack->createXmlNode(xmlDoc, liveSetNode);
+		abletonLiveSet->preHearTrack->createXmlNode(xmlDoc, liveSetNode);
 
 		auto viewDataEl = liveSetNode->InsertNewChildElement("ViewData");
 		viewDataEl->SetAttribute("Value", abletonLiveSet->viewData.c_str());
@@ -341,6 +412,11 @@ namespace avc {
 		auto masterColourPickerNode = xmlDoc.NewElement("AutoColorPickerForReturnAndMasterTracks");
 		auto mcpEl = masterColourPickerNode->InsertNewChildElement("NextColorIndex");
 		mcpEl->SetAttribute("Value", abletonLiveSet->autoColourPickerMasterTracks);
+
+		auto sendsPreEl = liveSetNode->InsertNewChildElement("SendsPre");
+		for (auto& sp : abletonLiveSet->sendsPre) {
+			sp.createXmlNode(xmlDoc, sendsPreEl);
+		}
 
 		abletonHeader->InsertEndChild(liveSetNode);
 		xmlDoc.InsertEndChild(abletonHeader);

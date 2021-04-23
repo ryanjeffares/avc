@@ -1,6 +1,5 @@
 #pragma once
-#include <utility>
-#include "../../deps/tinyxml2/tinyxml2.h"
+#include "../avc.h"
 
 namespace avc {
 	namespace ableton_data_types {
@@ -189,6 +188,22 @@ namespace avc {
 				auto mnEl = node->InsertNewChildElement("MemorizedFirstClip");
 				mnEl->SetAttribute("Value", memorizedFirstClip.c_str());
 				parent->InsertEndChild(node);
+			}
+		};
+
+		struct SendsPre : public virtual SmallNode
+		{
+			const int id;
+			const bool value;
+
+			SendsPre(int i, bool v)
+				: id(i), value(v) {}
+
+			void createXmlNode(XMLDocument& doc, XMLNode* parent) const override {
+				auto el = doc.NewElement("SendsPreBool");
+				el->SetAttribute("Id", id);
+				el->SetAttribute("Value", value);
+				parent->InsertEndChild(el);
 			}
 		};
 

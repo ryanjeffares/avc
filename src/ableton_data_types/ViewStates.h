@@ -1,7 +1,5 @@
 #pragma once
-#include <string>
-#include <map>
-#include "../../deps/tinyxml2/tinyxml2.h"
+#include "../avc.h"
 
 namespace avc {
 	namespace ableton_data_types {
