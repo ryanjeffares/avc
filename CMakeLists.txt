@@ -13,9 +13,9 @@ find_package(Boost REQUIRED COMPONENTS iostreams)
 
 # Add source to this project's executable.
 add_executable (avc "src/Main.cpp" "src/avc.h" "src/AbletonLiveSet.h"  "src/AlsIOHandler.h" 
-	"src/AlsIOHandler.cpp" "src/ableton_data_types/AbletonHeader.h"   "src/ableton_data_types/Track.h" "src/ableton_data_types/ViewStates.h" 
+	"src/AlsIOHandler.cpp"    "src/ableton_data_types/Track.h"  
 	"src/ableton_data_types/SmallNodes.h"   
-	  "deps/tinyxml2/tinyxml2.h" "deps/tinyxml2/tinyxml2.cpp" )
+	  "deps/tinyxml2/tinyxml2.h" "deps/tinyxml2/tinyxml2.cpp"  "src/ableton_data_types/DeviceChain.h")
 
 target_include_directories(avc PUBLIC ${BOOST_INCLUDEDIR})
 target_link_libraries(avc PUBLIC ${BOOST_LIBRARYDIR}/libboost_iostreams-vc142-mt-gd-x64-1_76.lib ${BOOST_LIBRARYDIR}/libboost_zlib-vc142-mt-gd-x64-1_76.lib)

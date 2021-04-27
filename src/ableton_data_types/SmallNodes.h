@@ -12,6 +12,17 @@ namespace avc {
 			virtual void createXmlNode(XMLDocument& doc, XMLNode* parent) const = 0;
 		};
 
+		struct AbletonHeader : public virtual SmallNode
+		{
+			const int majorVersion, schemaChangeCount;
+			const std::string minorVersion, creator, revision;
+
+			AbletonHeader(int majVer, std::string minVer, int schem, std::string cr, std::string rev)
+				: majorVersion(majVer), minorVersion(minVer), schemaChangeCount(schem), creator(cr), revision(rev) {}
+
+			void createXmlNode(XMLDocument& doc, XMLNode* parent) const override {}
+		};
+
 		struct ContentSplitterProperties : public virtual SmallNode
 		{
 			const bool open;
@@ -167,6 +178,7 @@ namespace avc {
 				vEl->SetAttribute("Value", value);
 				auto sEl = node->InsertNewChildElement("IsValueSampleBased");
 				sEl->SetAttribute("Value", isValueSampleBased);
+				parent->InsertEndChild(node);
 			}
 		};
 
@@ -204,6 +216,116 @@ namespace avc {
 				el->SetAttribute("Id", id);
 				el->SetAttribute("Value", value);
 				parent->InsertEndChild(el);
+			}
+		};
+
+		struct ViewStates : public virtual SmallNode
+		{
+			std::map<std::string, int> elements;
+
+			void createXmlNode(XMLDocument& doc, XMLNode* parent) const override {
+				auto node = doc.NewElement("ViewStates");
+				for (auto& val : elements) {
+					auto el = node->InsertNewChildElement(val.first.c_str());
+					el->SetAttribute("Value", val.second);
+				}
+				parent->InsertEndChild(node);
+			}
+		};
+
+		struct ClipEnvelopeChooserViewState : public virtual SmallNode
+		{
+			const int selectedDevice, selectedEnvelope;
+			const bool modulationVisible;
+
+			ClipEnvelopeChooserViewState(int sd, int se, bool m)
+				: selectedDevice(sd), selectedEnvelope(se), modulationVisible(m) {}
+
+			void createXmlNode(XMLDocument& doc, XMLNode* parent) const override {
+				auto node = doc.NewElement("ClipEnvelopeChooserViewState");
+				auto deviceEl = node->InsertNewChildElement("SelectedDevice");
+				deviceEl->SetAttribute("Value", selectedDevice);
+				auto envelopeEl = node->InsertNewChildElement("SelectedEnvelope");
+				envelopeEl->SetAttribute("Value", selectedEnvelope);
+				auto modEl = node->InsertNewChildElement("PreferModulationVisible");
+				modEl->SetAttribute("Value", modulationVisible);
+				parent->InsertEndChild(node);				
+			}
+		};
+
+		struct Routing : public virtual SmallNode
+		{
+			enum RoutingType
+			{
+				AUDIO_INPUT = 0, MIDI_INPUT = 1, AUDIO_OUTPUT = 2, MIDI_OUTPUT = 3
+			};
+
+			const std::string target, upperDisplay, lowerDisplay;
+			const RoutingType type;
+
+			Routing(std::string t, std::string u, std::string l, RoutingType rt)
+				: target(t), upperDisplay(u), lowerDisplay(l), type(rt) {}
+
+			void createXmlNode(XMLDocument& doc, XMLNode* parent) const override {
+				const char* name;
+				switch (type) {
+				case AUDIO_INPUT:
+					name = "AudioInputRouting";
+					break;
+				case AUDIO_OUTPUT:
+					name = "AudioOutputRouting";
+					break;
+				case MIDI_INPUT:
+					name = "MidiInputRoutine";
+					break;
+				case MIDI_OUTPUT:
+					name = "MidiOutputRouting";
+					break;
+				default:
+					if (_DEBUG) {
+						DBG("No RoutingType initialised, returning...");
+					}					
+					return;
+				}
+				auto node = doc.NewElement(name);
+				auto targetEl = node->InsertNewChildElement("Target");
+				targetEl->SetAttribute("Value", target.c_str());
+				auto upperEl = node->InsertNewChildElement("UpperDisplayString");
+				upperEl->SetAttribute("Value", upperDisplay.c_str());
+				auto lowerEl = node->InsertNewChildElement("LowerDisplayString");
+				lowerEl->SetAttribute("Value", lowerDisplay.c_str());
+				parent->InsertEndChild(node);
+			}
+		};
+
+		struct AutomationLane : public virtual SmallNode
+		{
+			const int id, selectedDevice, selectedEnvelope, laneHeight;
+			const bool contentSelected;
+
+			AutomationLane(int i, int sd, int se, int lh, bool cs)
+				: id(i), selectedDevice(sd), selectedEnvelope(se), laneHeight(lh), contentSelected(cs) {}
+
+			// the xml structure for these is 
+			// <AutomationLanes>
+			//		<AutomationLanes>
+			//			<AutomationLane />
+			//		</AutomationLanes>
+			//		<AreAdditionalAutomationLanesFolded />
+			// <AutomationLanes>
+			// so in the Track class we're gonna want to create all the outer nodes, so this function will be passed the inner-most AutomationLanes node
+			void createXmlNode(XMLDocument& doc, XMLNode* parent) const override {
+				auto node = doc.NewElement("AutomationLane");
+				node->SetAttribute("Id", id);
+				auto deviceEl = node->InsertNewChildElement("SelectedDevice");
+				deviceEl->SetAttribute("Value", selectedDevice);
+				auto envelopeEl = node->InsertNewChildElement("SelectedEnvelope");
+				envelopeEl->SetAttribute("Value", selectedEnvelope);
+				auto selectedEl = node->InsertNewChildElement("IsContentSelected");
+				selectedEl->SetAttribute("Value", contentSelected);
+				auto laneEl = node->InsertNewChildElement("LaneHeight");
+				laneEl->SetAttribute("Value", laneHeight);
+				parent->InsertEndChild(node);
 			}
 		};
 

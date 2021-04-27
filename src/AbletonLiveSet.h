@@ -1,10 +1,9 @@
 #pragma once
-#include "avc.h"
-#include "ableton_data_types/AbletonHeader.h"
 #include "ableton_data_types/Track.h"
-#include "ableton_data_types/ViewStates.h"
 
 namespace avc {
+
+	using namespace tinyxml2;
 
 	class AbletonLiveSet
 	{
@@ -35,8 +34,73 @@ namespace avc {
 
 		std::vector<ableton_data_types::SendsPre> sendsPre;
 
-		std::vector<ableton_data_types::Track> tracks;
+		std::vector<std::shared_ptr<ableton_data_types::Track>> tracks;
 		std::unique_ptr<ableton_data_types::Track> masterTrack, preHearTrack;
+
+		void createXmlNode(XMLDocument& doc) {
+			auto header = doc.NewElement("Ableton");
+			header->SetAttribute("MajorVersion", abletonHeader->majorVersion);
+			header->SetAttribute("MinorVersion", abletonHeader->minorVersion.c_str());
+			header->SetAttribute("SchemaChangeCount", abletonHeader->schemaChangeCount);
+			header->SetAttribute("Creator", abletonHeader->creator.c_str());
+			header->SetAttribute("Revision", abletonHeader->revision.c_str());
+			auto liveSetNode = doc.NewElement("LiveSet");
+
+			for (auto& i : intValues) {
+				auto el = liveSetNode->InsertNewChildElement(i.first.c_str());
+				el->SetAttribute("Value", i.second);
+			}
+			for (auto& il : intValuesLomId) {
+				auto el = liveSetNode->InsertNewChildElement(il.first.c_str());
+				el->SetAttribute("LomId", il.second);
+			}
+			for (auto& b : boolValues) {
+				auto el = liveSetNode->InsertNewChildElement(b.first.c_str());
+				el->SetAttribute("Value", b.second);
+			}
+
+			auto trackNode = doc.NewElement("Tracks");
+			for (auto& t : tracks) {
+				t->createXmlNode(doc, trackNode);
+			}
+			liveSetNode->InsertEndChild(trackNode);
+			masterTrack->createXmlNode(doc, liveSetNode);
+			preHearTrack->createXmlNode(doc, liveSetNode);
+
+			auto viewDataEl = liveSetNode->InsertNewChildElement("ViewData");
+			viewDataEl->SetAttribute("Value", viewData.c_str());
+			auto annotationEl = liveSetNode->InsertNewChildElement("Annotation");
+			annotationEl->SetAttribute("Value", annotation.c_str());
+
+			auto videoRectEl = liveSetNode->InsertNewChildElement("VideoWindowRect");
+			for (auto& v : videoRect) {
+				videoRectEl->SetAttribute(v.first.c_str(), v.second);
+			}
+
+			contentSplitterProperties->createXmlNode(doc, liveSetNode);
+			sequencerNavigator->createXmlNode(doc, liveSetNode);
+			timeSelection->createXmlNode(doc, liveSetNode);
+			scaleInformation->createXmlNode(doc, liveSetNode);
+			grid->createXmlNode(doc, liveSetNode);
+			viewStates->createXmlNode(doc, liveSetNode);
+			transport->createXmlNode(doc, liveSetNode);
+
+			auto playerColourPickerNode = doc.NewElement("AutoColorPickerForPlayerAndGroupTracks");
+			auto pcpEl = playerColourPickerNode->InsertNewChildElement("NextColorIndex");
+			pcpEl->SetAttribute("Value", autoColourPickerPlayerTracks);
+
+			auto masterColourPickerNode = doc.NewElement("AutoColorPickerForReturnAndMasterTracks");
+			auto mcpEl = masterColourPickerNode->InsertNewChildElement("NextColorIndex");
+			mcpEl->SetAttribute("Value", autoColourPickerMasterTracks);
+
+			auto sendsPreEl = liveSetNode->InsertNewChildElement("SendsPre");
+			for (auto& sp : sendsPre) {
+				sp.createXmlNode(doc, sendsPreEl);
+			}
+
+			header->InsertEndChild(liveSetNode);
+			doc.InsertEndChild(header);
+		}
 
 	private:
 		std::string name, xmlVersion, xmlEncoding;

@@ -1,7 +1,4 @@
 ﻿// Main.cpp : Defines the entry point for the application.
-#include <string>
-#include <iostream>
-#include <chrono>
 #include "AlsIOHandler.h"
 
 int main(int argc, char* argv[])

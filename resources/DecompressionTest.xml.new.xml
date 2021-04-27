@@ -55,14 +55,56 @@
                 <NeedArrangerRefreeze Value="true"/>
                 <TrackUnfolded Value="true"/>
                 <ViewData Value="{}"/>
+                <TrackDelay>
+                    <Value Value="0"/>
+                    <IsValueSampleBased Value="false"/>
+                </TrackDelay>
                 <Name>
                     <EffectiveName Value="1-Analog"/>
                     <UserName Value=""/>
                     <Annotation Value=""/>
                     <MemorizedFirstClip Value=""/>
                 </Name>
+                <DeviceChain>
+                    <AutomationLanes>
+                        <AutomationLanes>
+                            <AutomationLane Id="0">
+                                <SelectedDevice Value="2"/>
+                                <SelectedEnvelope Value="0"/>
+                                <IsContentSelected Value="false"/>
+                                <LaneHeight Value="68"/>
+                            </AutomationLane>
+                        </AutomationLanes>
+                        <AreAdditionalAutomationLanesFolded Value="false"/>
+                    </AutomationLanes>
+                    <ClipEnvelopeChooserViewState>
+                        <SelectedDevice Value="2"/>
+                        <SelectedEnvelope Value="1"/>
+                        <PreferModulationVisible Value="true"/>
+                    </ClipEnvelopeChooserViewState>
+                    <AudioInputRouting>
+                        <Target Value="AudioIn/External/S0"/>
+                        <UpperDisplayString Value="Ext. In"/>
+                        <LowerDisplayString Value="1/2"/>
+                    </AudioInputRouting>
+                    <MidiInputRoutine>
+                        <Target Value="MidiIn/External.All/-1"/>
+                        <UpperDisplayString Value="Ext: All Ins"/>
+                        <LowerDisplayString Value=""/>
+                    </MidiInputRoutine>
+                    <AudioOutputRouting>
+                        <Target Value="AudioOut/Master"/>
+                        <UpperDisplayString Value="Master"/>
+                        <LowerDisplayString Value=""/>
+                    </AudioOutputRouting>
+                    <MidiOutputRouting>
+                        <Target Value="MidiOut/None"/>
+                        <UpperDisplayString Value="None"/>
+                        <LowerDisplayString Value=""/>
+                    </MidiOutputRouting>
+                </DeviceChain>
             </MidiTrack>
-            <AudioTrack Id="8">
+            <MidiTrack Id="8">
                 <ColorIndex Value="163"/>
                 <LomId Value="0"/>
                 <LomIdView Value="0"/>
@@ -79,14 +121,56 @@
                 <NeedArrangerRefreeze Value="true"/>
                 <TrackUnfolded Value="true"/>
                 <ViewData Value="{}"/>
+                <TrackDelay>
+                    <Value Value="0"/>
+                    <IsValueSampleBased Value="false"/>
+                </TrackDelay>
                 <Name>
                     <EffectiveName Value="2-SAS DrumLoop"/>
                     <UserName Value=""/>
                     <Annotation Value=""/>
                     <MemorizedFirstClip Value="SAS DrumLoop"/>
                 </Name>
-            </AudioTrack>
-            <ReturnTrack Id="2">
+                <DeviceChain>
+                    <AutomationLanes>
+                        <AutomationLanes>
+                            <AutomationLane Id="0">
+                                <SelectedDevice Value="0"/>
+                                <SelectedEnvelope Value="0"/>
+                                <IsContentSelected Value="false"/>
+                                <LaneHeight Value="68"/>
+                            </AutomationLane>
+                        </AutomationLanes>
+                        <AreAdditionalAutomationLanesFolded Value="false"/>
+                    </AutomationLanes>
+                    <ClipEnvelopeChooserViewState>
+                        <SelectedDevice Value="1"/>
+                        <SelectedEnvelope Value="2"/>
+                        <PreferModulationVisible Value="true"/>
+                    </ClipEnvelopeChooserViewState>
+                    <AudioInputRouting>
+                        <Target Value="AudioIn/External/M0"/>
+                        <UpperDisplayString Value="Ext. In"/>
+                        <LowerDisplayString Value="1"/>
+                    </AudioInputRouting>
+                    <MidiInputRoutine>
+                        <Target Value="MidiIn/External.All/-1"/>
+                        <UpperDisplayString Value="Ext: All Ins"/>
+                        <LowerDisplayString Value=""/>
+                    </MidiInputRoutine>
+                    <AudioOutputRouting>
+                        <Target Value="AudioOut/Master"/>
+                        <UpperDisplayString Value="Master"/>
+                        <LowerDisplayString Value=""/>
+                    </AudioOutputRouting>
+                    <MidiOutputRouting>
+                        <Target Value="MidiOut/None"/>
+                        <UpperDisplayString Value="None"/>
+                        <LowerDisplayString Value=""/>
+                    </MidiOutputRouting>
+                </DeviceChain>
+            </MidiTrack>
+            <MidiTrack Id="2">
                 <ColorIndex Value="145"/>
                 <LomId Value="0"/>
                 <LomIdView Value="0"/>
@@ -97,14 +181,56 @@
                 <IsContentSelected Value="false"/>
                 <TrackUnfolded Value="false"/>
                 <ViewData Value="{}"/>
+                <TrackDelay>
+                    <Value Value="0"/>
+                    <IsValueSampleBased Value="false"/>
+                </TrackDelay>
                 <Name>
                     <EffectiveName Value="A-Reverb"/>
                     <UserName Value=""/>
                     <Annotation Value=""/>
                     <MemorizedFirstClip Value=""/>
                 </Name>
-            </ReturnTrack>
-            <ReturnTrack Id="3">
+                <DeviceChain>
+                    <AutomationLanes>
+                        <AutomationLanes>
+                            <AutomationLane Id="0">
+                                <SelectedDevice Value="2"/>
+                                <SelectedEnvelope Value="2"/>
+                                <IsContentSelected Value="false"/>
+                                <LaneHeight Value="85"/>
+                            </AutomationLane>
+                        </AutomationLanes>
+                        <AreAdditionalAutomationLanesFolded Value="false"/>
+                    </AutomationLanes>
+                    <ClipEnvelopeChooserViewState>
+                        <SelectedDevice Value="0"/>
+                        <SelectedEnvelope Value="0"/>
+                        <PreferModulationVisible Value="false"/>
+                    </ClipEnvelopeChooserViewState>
+                    <AudioInputRouting>
+                        <Target Value="AudioIn/External/S0"/>
+                        <UpperDisplayString Value="Ext. In"/>
+                        <LowerDisplayString Value="1/2"/>
+                    </AudioInputRouting>
+                    <MidiInputRoutine>
+                        <Target Value="MidiIn/External.All/-1"/>
+                        <UpperDisplayString Value="Ext: All Ins"/>
+                        <LowerDisplayString Value=""/>
+                    </MidiInputRoutine>
+                    <AudioOutputRouting>
+                        <Target Value="AudioOut/Master"/>
+                        <UpperDisplayString Value="Master"/>
+                        <LowerDisplayString Value=""/>
+                    </AudioOutputRouting>
+                    <MidiOutputRouting>
+                        <Target Value="MidiOut/None"/>
+                        <UpperDisplayString Value="None"/>
+                        <LowerDisplayString Value=""/>
+                    </MidiOutputRouting>
+                </DeviceChain>
+            </MidiTrack>
+            <MidiTrack Id="3">
                 <ColorIndex Value="144"/>
                 <LomId Value="0"/>
                 <LomIdView Value="0"/>
@@ -115,13 +241,55 @@
                 <IsContentSelected Value="false"/>
                 <TrackUnfolded Value="false"/>
                 <ViewData Value="{}"/>
+                <TrackDelay>
+                    <Value Value="0"/>
+                    <IsValueSampleBased Value="false"/>
+                </TrackDelay>
                 <Name>
                     <EffectiveName Value="B-Delay"/>
                     <UserName Value=""/>
                     <Annotation Value=""/>
                     <MemorizedFirstClip Value=""/>
                 </Name>
-            </ReturnTrack>
+                <DeviceChain>
+                    <AutomationLanes>
+                        <AutomationLanes>
+                            <AutomationLane Id="0">
+                                <SelectedDevice Value="1"/>
+                                <SelectedEnvelope Value="1"/>
+                                <IsContentSelected Value="false"/>
+                                <LaneHeight Value="85"/>
+                            </AutomationLane>
+                        </AutomationLanes>
+                        <AreAdditionalAutomationLanesFolded Value="false"/>
+                    </AutomationLanes>
+                    <ClipEnvelopeChooserViewState>
+                        <SelectedDevice Value="0"/>
+                        <SelectedEnvelope Value="0"/>
+                        <PreferModulationVisible Value="false"/>
+                    </ClipEnvelopeChooserViewState>
+                    <AudioInputRouting>
+                        <Target Value="AudioIn/External/S0"/>
+                        <UpperDisplayString Value="Ext. In"/>
+                        <LowerDisplayString Value="1/2"/>
+                    </AudioInputRouting>
+                    <MidiInputRoutine>
+                        <Target Value="MidiIn/External.All/-1"/>
+                        <UpperDisplayString Value="Ext: All Ins"/>
+                        <LowerDisplayString Value=""/>
+                    </MidiInputRoutine>
+                    <AudioOutputRouting>
+                        <Target Value="AudioOut/Master"/>
+                        <UpperDisplayString Value="Master"/>
+                        <LowerDisplayString Value=""/>
+                    </AudioOutputRouting>
+                    <MidiOutputRouting>
+                        <Target Value="MidiOut/None"/>
+                        <UpperDisplayString Value="None"/>
+                        <LowerDisplayString Value=""/>
+                    </MidiOutputRouting>
+                </DeviceChain>
+            </MidiTrack>
         </Tracks>
         <MasterTrack>
             <ColorIndex Value="161"/>
@@ -134,12 +302,54 @@
             <IsContentSelected Value="false"/>
             <TrackUnfolded Value="false"/>
             <ViewData Value="{}"/>
+            <TrackDelay>
+                <Value Value="0"/>
+                <IsValueSampleBased Value="false"/>
+            </TrackDelay>
             <Name>
                 <EffectiveName Value="Master"/>
                 <UserName Value=""/>
                 <Annotation Value=""/>
                 <MemorizedFirstClip Value=""/>
             </Name>
+            <DeviceChain>
+                <AutomationLanes>
+                    <AutomationLanes>
+                        <AutomationLane Id="0">
+                            <SelectedDevice Value="1"/>
+                            <SelectedEnvelope Value="2"/>
+                            <IsContentSelected Value="false"/>
+                            <LaneHeight Value="85"/>
+                        </AutomationLane>
+                    </AutomationLanes>
+                    <AreAdditionalAutomationLanesFolded Value="false"/>
+                </AutomationLanes>
+                <ClipEnvelopeChooserViewState>
+                    <SelectedDevice Value="0"/>
+                    <SelectedEnvelope Value="0"/>
+                    <PreferModulationVisible Value="false"/>
+                </ClipEnvelopeChooserViewState>
+                <AudioInputRouting>
+                    <Target Value="AudioIn/External/S0"/>
+                    <UpperDisplayString Value="Ext. In"/>
+                    <LowerDisplayString Value="1/2"/>
+                </AudioInputRouting>
+                <MidiInputRoutine>
+                    <Target Value="MidiIn/External.All/-1"/>
+                    <UpperDisplayString Value="Ext: All Ins"/>
+                    <LowerDisplayString Value=""/>
+                </MidiInputRoutine>
+                <AudioOutputRouting>
+                    <Target Value="AudioOut/External/S0"/>
+                    <UpperDisplayString Value="Ext. Out"/>
+                    <LowerDisplayString Value="1/2"/>
+                </AudioOutputRouting>
+                <MidiOutputRouting>
+                    <Target Value="MidiOut/None"/>
+                    <UpperDisplayString Value="None"/>
+                    <LowerDisplayString Value=""/>
+                </MidiOutputRouting>
+            </DeviceChain>
         </MasterTrack>
         <PreHearTrack>
             <ColorIndex Value="0"/>
@@ -152,12 +362,54 @@
             <IsContentSelected Value="false"/>
             <TrackUnfolded Value="false"/>
             <ViewData Value="{}"/>
+            <TrackDelay>
+                <Value Value="0"/>
+                <IsValueSampleBased Value="false"/>
+            </TrackDelay>
             <Name>
                 <EffectiveName Value="Master"/>
                 <UserName Value=""/>
                 <Annotation Value=""/>
                 <MemorizedFirstClip Value=""/>
             </Name>
+            <DeviceChain>
+                <AutomationLanes>
+                    <AutomationLanes>
+                        <AutomationLane Id="0">
+                            <SelectedDevice Value="0"/>
+                            <SelectedEnvelope Value="0"/>
+                            <IsContentSelected Value="false"/>
+                            <LaneHeight Value="85"/>
+                        </AutomationLane>
+                    </AutomationLanes>
+                    <AreAdditionalAutomationLanesFolded Value="false"/>
+                </AutomationLanes>
+                <ClipEnvelopeChooserViewState>
+                    <SelectedDevice Value="0"/>
+                    <SelectedEnvelope Value="0"/>
+                    <PreferModulationVisible Value="false"/>
+                </ClipEnvelopeChooserViewState>
+                <AudioInputRouting>
+                    <Target Value="AudioIn/External/S0"/>
+                    <UpperDisplayString Value="Ext. In"/>
+                    <LowerDisplayString Value="1/2"/>
+                </AudioInputRouting>
+                <MidiInputRoutine>
+                    <Target Value="MidiIn/External.All/-1"/>
+                    <UpperDisplayString Value="Ext: All Ins"/>
+                    <LowerDisplayString Value=""/>
+                </MidiInputRoutine>
+                <AudioOutputRouting>
+                    <Target Value="AudioOut/External/S0"/>
+                    <UpperDisplayString Value="Ext. Out"/>
+                    <LowerDisplayString Value="1/2"/>
+                </AudioOutputRouting>
+                <MidiOutputRouting>
+                    <Target Value="MidiOut/None"/>
+                    <UpperDisplayString Value="None"/>
+                    <LowerDisplayString Value=""/>
+                </MidiOutputRouting>
+            </DeviceChain>
         </PreHearTrack>
         <ViewData Value="{}"/>
         <Annotation Value=""/>

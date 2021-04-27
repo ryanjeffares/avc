@@ -225,18 +225,18 @@ namespace avc {
 			int id;
 			currentElement->QueryIntAttribute("Id", &id);
 			if (strcmp(currentElement->Name(), "MidiTrack") == 0) {
-				Track track(id, Track::TrackType::MIDI_TRACK);
-				getTrackInfo(track, currentElement);
+				auto track = std::make_shared<Track>(id, Track::TrackType::MIDI_TRACK);
+				getTrackInfo(track.get(), currentElement);
 				abletonLiveSet->tracks.push_back(track);
 			}
 			else if (strcmp(currentElement->Name(), "AudioTrack") == 0) {
-				Track track(id, Track::TrackType::AUDIO_TRACK);
-				getTrackInfo(track, currentElement);
+				auto track = std::make_shared<Track>(id, Track::TrackType::MIDI_TRACK);
+				getTrackInfo(track.get(), currentElement);
 				abletonLiveSet->tracks.push_back(track);
 			}
 			else if (strcmp(currentElement->Name(), "ReturnTrack") == 0) {
-				Track track(id, Track::TrackType::RETURN_TRACK);
-				getTrackInfo(track, currentElement);
+				auto track = std::make_shared<Track>(id, Track::TrackType::MIDI_TRACK);
+				getTrackInfo(track.get(), currentElement);
 				abletonLiveSet->tracks.push_back(track);
 			}
 			else {
@@ -248,65 +248,15 @@ namespace avc {
 
 	void AlsIOHandler::getMasterTrack(XMLElement* parent) {
 		abletonLiveSet->masterTrack = std::make_unique<Track>(Track::TrackType::MASTER_TRACK);
-		getTrackInfo(abletonLiveSet->masterTrack, parent);
+		getTrackInfo(abletonLiveSet->masterTrack.get(), parent);
 	}
 
 	void AlsIOHandler::getPreHearTrack(XMLElement* parent) {
 		abletonLiveSet->preHearTrack = std::make_unique<Track>(Track::TrackType::PRE_HEAR_TRACK);
-		getTrackInfo(abletonLiveSet->preHearTrack, parent);
+		getTrackInfo(abletonLiveSet->preHearTrack.get(), parent);
 	}
 
-	void AlsIOHandler::getTrackInfo(Track& track, XMLNode* parent) {
-		auto currentElement = parent->FirstChildElement();
-		while (currentElement != nullptr) {
-			if (currentElement->NoChildren()) {
-				int intVal;
-				bool boolVal;
-				const char* stringVal;
-				if (currentElement->QueryIntAttribute("LomId", &intVal) == XML_SUCCESS) {
-					track.intValuesLomId.emplace(currentElement->Name(), intVal);
-				}
-				else if (currentElement->QueryIntAttribute("Value", &intVal) == XML_SUCCESS) {
-					track.intValues.emplace(currentElement->Name(), intVal);
-				}
-				else if (currentElement->QueryBoolAttribute("Value", &boolVal) == XML_SUCCESS) {
-					track.boolValues.emplace(currentElement->Name(), boolVal);
-				}
-				else if (currentElement->QueryStringAttribute("Value", &stringVal) == XML_SUCCESS && strcmp(currentElement->Name(), "ViewData") == 0) {
-					track.viewData = std::string(stringVal);
-				}
-				else {
-					LOG("Unable to parse element %s from track %s, id: %i", currentElement->Name(), parent->Value(), track.id);
-				}
-			}
-			else {
-				if (strcmp(currentElement->Name(), "TrackDelay") == 0) {
-					int v;
-					bool s;
-					currentElement->FirstChildElement("Value")->QueryIntAttribute("Value", &v);
-					currentElement->FirstChildElement("IsValueSampleBased")->QueryBoolAttribute("Value", &s);
-					track.trackDelay = std::make_shared<TrackDelay>(v, s);
-				}
-				else if (strcmp(currentElement->Name(), "Name") == 0) {
-					const char* en;
-					const char* un;
-					const char* an;
-					const char* mn;
-					currentElement->FirstChildElement("EffectiveName")->QueryStringAttribute("Value", &en);
-					currentElement->FirstChildElement("UserName")->QueryStringAttribute("Value", &un);
-					currentElement->FirstChildElement("Annotation")->QueryStringAttribute("Value", &an);
-					currentElement->FirstChildElement("MemorizedFirstClipName")->QueryStringAttribute("Value", &mn);
-					track.name = std::make_shared<Name>(std::string(en), std::string(un), std::string(an), std::string(mn));
-				}
-				else {
-					LOG("Didn't parse node %s in track %s, ID %i, probably because you haven't implemented it.", currentElement->Name(), parent->Value(), track.id);
-				}
-			}
-			currentElement = currentElement->NextSiblingElement();
-		}
-	}
-
-	void AlsIOHandler::getTrackInfo(std::unique_ptr<Track>& track, XMLNode* parent) {
+	void AlsIOHandler::getTrackInfo(Track* track, XMLNode* parent) {
 		auto currentElement = parent->FirstChildElement();
 		while (currentElement != nullptr) {
 			if (currentElement->NoChildren()) {
@@ -335,7 +285,7 @@ namespace avc {
 					bool s;
 					currentElement->FirstChildElement("Value")->QueryIntAttribute("Value", &v);
 					currentElement->FirstChildElement("IsValueSampleBased")->QueryBoolAttribute("Value", &s);
-					track->trackDelay = std::make_shared<TrackDelay>(v, s);
+					track->trackDelay = std::make_unique<TrackDelay>(v, s);
 				}
 				else if (strcmp(currentElement->Name(), "Name") == 0) {
 					const char* en;
@@ -346,7 +296,75 @@ namespace avc {
 					currentElement->FirstChildElement("UserName")->QueryStringAttribute("Value", &un);
 					currentElement->FirstChildElement("Annotation")->QueryStringAttribute("Value", &an);
 					currentElement->FirstChildElement("MemorizedFirstClipName")->QueryStringAttribute("Value", &mn);
-					track->name = std::make_shared<Name>(std::string(en), std::string(un), std::string(an), std::string(mn));
+					track->name = std::make_unique<Name>(std::string(en), std::string(un), std::string(an), std::string(mn));
+				}
+				else if (strcmp(currentElement->Name(), "DeviceChain") == 0) {
+					std::vector<std::string> nodeNames = {
+						"AutomationLanes", "ClipEnvelopeChooserViewState", "AudioInputRouting", "MidiInputRouting", "AudioOutputRouting", "MidiOutputRouting"
+					};
+					auto el = currentElement->FirstChildElement();
+					while (el != nullptr) {
+						auto it = std::find(nodeNames.begin(), nodeNames.end(), std::string(el->Name()));
+						auto idx = it - nodeNames.begin();
+						switch (idx) {
+							case 0: {
+								auto automationLanesNode = el->FirstChildElement("AutomationLanes");
+								auto automationLane = automationLanesNode->FirstChildElement();
+								while (automationLane != nullptr) {
+									int id, sd, se, lh;
+									bool cs;
+									automationLane->QueryIntAttribute("Id", &id);
+									automationLane->FirstChildElement("SelectedDevice")->QueryIntAttribute("Value", &sd);
+									automationLane->FirstChildElement("SelectedEnvelope")->QueryIntAttribute("Value", &se);
+									automationLane->FirstChildElement("IsContentSelected")->QueryBoolAttribute("Value", &cs);
+									automationLane->FirstChildElement("LaneHeight")->QueryIntAttribute("Value", &lh);
+									track->deviceChain.automationLanes.push_back(std::make_unique<AutomationLane>(id, sd, se, lh, cs));
+									automationLane = automationLane->NextSiblingElement();
+								}
+								bool folded;
+								el->FirstChildElement("AreAdditionalAutomationLanesFolded")->QueryBoolAttribute("Value", &folded);
+								track->deviceChain.lanesFolded = folded;
+								break;
+							}
+							case 1: {
+								int sd, se;
+								bool mv;
+								el->FirstChildElement("SelectedDevice")->QueryIntAttribute("Value", &sd);
+								el->FirstChildElement("SelectedEnvelope")->QueryIntAttribute("Value", &se);
+								el->FirstChildElement("PreferModulationVisible")->QueryBoolAttribute("Value", &mv);
+								track->deviceChain.clipChooserViewState = std::make_unique<ClipEnvelopeChooserViewState>(sd, se, mv);
+								break;
+							}
+							case 2:
+							case 3:
+							case 4:
+							case 5: {
+								Routing::RoutingType type = (Routing::RoutingType)(idx - 2);
+								const char* t;
+								const char* u;
+								const char* l;
+								el->FirstChildElement("Target")->QueryStringAttribute("Value", &t);
+								el->FirstChildElement("UpperDisplayString")->QueryStringAttribute("Value", &u);
+								el->FirstChildElement("LowerDisplayString")->QueryStringAttribute("Value", &l);
+								switch (idx) {
+								case 2:
+									track->deviceChain.audioInputRouting = std::make_unique<Routing>(t, u, l, type);
+									break;
+								case 3:
+									track->deviceChain.midiInputRouting = std::make_unique<Routing>(t, u, l, type);
+									break;
+								case 4:
+									track->deviceChain.audioOutputRouting = std::make_unique<Routing>(t, u, l, type);
+									break;
+								case 5:
+									track->deviceChain.midiOutputRouting = std::make_unique<Routing>(t, u, l, type);
+									break;
+								}
+								break;
+							}
+						}
+						el = el->NextSiblingElement();
+					}
 				}
 				else {
 					LOG("Didn't parse node %s in track %s, ID %i, probably because you haven't implemented it.", currentElement->Name(), parent->Value(), track->id);
@@ -360,66 +378,7 @@ namespace avc {
 		XMLDocument xmlDoc;
 		auto decl = xmlDoc.NewDeclaration();
 		xmlDoc.InsertEndChild(decl);
-		auto abletonHeader = xmlDoc.NewElement("Ableton");
-		abletonHeader->SetAttribute("MajorVersion", abletonLiveSet->abletonHeader->majorVersion);
-		abletonHeader->SetAttribute("MinorVersion", abletonLiveSet->abletonHeader->minorVersion.c_str());
-		abletonHeader->SetAttribute("SchemaChangeCount", abletonLiveSet->abletonHeader->schemaChangeCount);
-		abletonHeader->SetAttribute("Creator", abletonLiveSet->abletonHeader->creator.c_str());
-		abletonHeader->SetAttribute("Revision", abletonLiveSet->abletonHeader->revision.c_str());		
-		auto liveSetNode = xmlDoc.NewElement("LiveSet");		
-		for (auto& i : abletonLiveSet->intValues) {
-			auto el = liveSetNode->InsertNewChildElement(i.first.c_str());
-			el->SetAttribute("Value", i.second);			
-		}
-		for (auto& il : abletonLiveSet->intValuesLomId) {
-			auto el = liveSetNode->InsertNewChildElement(il.first.c_str());
-			el->SetAttribute("LomId", il.second);
-		}
-		for (auto& b : abletonLiveSet->boolValues) {
-			auto el = liveSetNode->InsertNewChildElement(b.first.c_str());
-			el->SetAttribute("Value", b.second);
-		}
-
-		auto trackNode = xmlDoc.NewElement("Tracks");
-		for (auto& t : abletonLiveSet->tracks) {
-			t.createXmlNode(xmlDoc, trackNode);
-		}
-		liveSetNode->InsertEndChild(trackNode);
-		abletonLiveSet->masterTrack->createXmlNode(xmlDoc, liveSetNode);
-		abletonLiveSet->preHearTrack->createXmlNode(xmlDoc, liveSetNode);
-
-		auto viewDataEl = liveSetNode->InsertNewChildElement("ViewData");
-		viewDataEl->SetAttribute("Value", abletonLiveSet->viewData.c_str());
-		auto annotationEl = liveSetNode->InsertNewChildElement("Annotation");
-		annotationEl->SetAttribute("Value", abletonLiveSet->annotation.c_str());
-		auto videoRectEl = liveSetNode->InsertNewChildElement("VideoWindowRect");
-		for (auto& v : abletonLiveSet->videoRect) {
-			videoRectEl->SetAttribute(v.first.c_str(), v.second);
-		}
-
-		abletonLiveSet->contentSplitterProperties->createXmlNode(xmlDoc, liveSetNode);
-		abletonLiveSet->sequencerNavigator->createXmlNode(xmlDoc, liveSetNode);
-		abletonLiveSet->timeSelection->createXmlNode(xmlDoc, liveSetNode);
-		abletonLiveSet->scaleInformation->createXmlNode(xmlDoc, liveSetNode);
-		abletonLiveSet->grid->createXmlNode(xmlDoc, liveSetNode);
-		abletonLiveSet->viewStates->createXmlNode(xmlDoc, liveSetNode);
-		abletonLiveSet->transport->createXmlNode(xmlDoc, liveSetNode);
-
-		auto playerColourPickerNode = xmlDoc.NewElement("AutoColorPickerForPlayerAndGroupTracks");
-		auto pcpEl = playerColourPickerNode->InsertNewChildElement("NextColorIndex");
-		pcpEl->SetAttribute("Value", abletonLiveSet->autoColourPickerPlayerTracks);
-
-		auto masterColourPickerNode = xmlDoc.NewElement("AutoColorPickerForReturnAndMasterTracks");
-		auto mcpEl = masterColourPickerNode->InsertNewChildElement("NextColorIndex");
-		mcpEl->SetAttribute("Value", abletonLiveSet->autoColourPickerMasterTracks);
-
-		auto sendsPreEl = liveSetNode->InsertNewChildElement("SendsPre");
-		for (auto& sp : abletonLiveSet->sendsPre) {
-			sp.createXmlNode(xmlDoc, sendsPreEl);
-		}
-
-		abletonHeader->InsertEndChild(liveSetNode);
-		xmlDoc.InsertEndChild(abletonHeader);
+		abletonLiveSet->createXmlNode(xmlDoc);
 		xmlDoc.SaveFile((outputPath + ".new.xml").c_str());
 	}
 

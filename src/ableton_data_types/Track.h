@@ -1,6 +1,5 @@
 #pragma once
-#include "../avc.h"
-#include "SmallNodes.h"
+#include "DeviceChain.h"
 
 namespace avc {
 	namespace ableton_data_types {
@@ -17,14 +16,15 @@ namespace avc {
 			};			
 
 			Track(int _id, TrackType _type) : id(_id), type(_type) {}				
-			Track(TrackType _type) : type(_type) {}				
+			Track(TrackType _type) : type(_type) {}		
 
 			int id;
 			std::map<std::string, int> intValues, intValuesLomId;
 			std::map<std::string, bool> boolValues;
 			std::string viewData;
-			std::shared_ptr<TrackDelay> trackDelay;
-			std::shared_ptr<Name> name;
+			std::unique_ptr<TrackDelay> trackDelay;
+			std::unique_ptr<Name> name;			
+			DeviceChain deviceChain;
 			TrackType type;
 
 			void createXmlNode(XMLDocument& doc, XMLNode* parent) const {
@@ -45,6 +45,8 @@ namespace avc {
 					case PRE_HEAR_TRACK:
 						typeName = "PreHearTrack";
 						break;
+					default:
+						return;
 				}
 				auto node = doc.NewElement(typeName);
 				if (type != MASTER_TRACK && type != PRE_HEAR_TRACK) {
@@ -66,6 +68,7 @@ namespace avc {
 				vdEl->SetAttribute("Value", viewData.c_str());
 				trackDelay->createXmlNode(doc, node);
 				name->createXmlNode(doc, node);
+				deviceChain.createXmlNode(doc, node);					
 				parent->InsertEndChild(node);
 			}
 

@@ -23,8 +23,7 @@ namespace avc {
 
 		void getValues(XMLNode* node);
 		void getTracks(XMLElement* node);
-		void getTrackInfo(Track& track, XMLNode* node);
-		void getTrackInfo(std::unique_ptr<Track>& track, XMLNode* node);
+		void getTrackInfo(Track* track, XMLNode* node);
 		void getMasterTrack(XMLElement* node);
 		void getPreHearTrack(XMLElement* node);
 
