@@ -102,6 +102,44 @@
                         <UpperDisplayString Value="None"/>
                         <LowerDisplayString Value=""/>
                     </MidiOutputRouting>
+                    <Mixer>
+                        <LastSelectedClipEnvelopeIndex Value="0"/>
+                        <LastSelectedTimeableIndex Value="0"/>
+                        <LomId Value="0"/>
+                        <LomIdView Value="0"/>
+                        <PanMode Value="0"/>
+                        <ViewStateSesstionTrackWidth Value="93"/>
+                        <ParametersListWrapper LomId="0"/>
+                        <SendsListWrapper LomId="0"/>
+                        <IsExpanded Value="true"/>
+                        <IsFolded Value="false"/>
+                        <ShouldShowPresetName Value="false"/>
+                        <SoloSink Value="false"/>
+                        <Annotation Value=""/>
+                        <UserName Value=""/>
+                        <On>
+                            <LomId Value="0"/>
+                            <Manual Value="true"/>
+                            <AutomationTarget Id="15830">
+                                <LockEnvelope Value="0"/>
+                            </AutomationTarget>
+                            <MidiCCOnOffThresholds>
+                                <Min Value="64"/>
+                                <Max Value="127"/>
+                            </MidiCCOnOffThresholds>
+                        </On>
+                        <Speaker>
+                            <LomId Value="0"/>
+                            <Manual Value="true"/>
+                            <AutomationTarget Id="15835">
+                                <LockEnvelope Value="0"/>
+                            </AutomationTarget>
+                            <MidiCCOnOffThresholds>
+                                <Min Value="64"/>
+                                <Max Value="127"/>
+                            </MidiCCOnOffThresholds>
+                        </Speaker>
+                    </Mixer>
                 </DeviceChain>
             </MidiTrack>
             <MidiTrack Id="8">
@@ -168,6 +206,44 @@
                         <UpperDisplayString Value="None"/>
                         <LowerDisplayString Value=""/>
                     </MidiOutputRouting>
+                    <Mixer>
+                        <LastSelectedClipEnvelopeIndex Value="2"/>
+                        <LastSelectedTimeableIndex Value="2"/>
+                        <LomId Value="0"/>
+                        <LomIdView Value="0"/>
+                        <PanMode Value="0"/>
+                        <ViewStateSesstionTrackWidth Value="93"/>
+                        <ParametersListWrapper LomId="0"/>
+                        <SendsListWrapper LomId="0"/>
+                        <IsExpanded Value="true"/>
+                        <IsFolded Value="false"/>
+                        <ShouldShowPresetName Value="false"/>
+                        <SoloSink Value="false"/>
+                        <Annotation Value=""/>
+                        <UserName Value=""/>
+                        <On>
+                            <LomId Value="0"/>
+                            <Manual Value="true"/>
+                            <AutomationTarget Id="8630">
+                                <LockEnvelope Value="0"/>
+                            </AutomationTarget>
+                            <MidiCCOnOffThresholds>
+                                <Min Value="64"/>
+                                <Max Value="127"/>
+                            </MidiCCOnOffThresholds>
+                        </On>
+                        <Speaker>
+                            <LomId Value="0"/>
+                            <Manual Value="true"/>
+                            <AutomationTarget Id="8635">
+                                <LockEnvelope Value="0"/>
+                            </AutomationTarget>
+                            <MidiCCOnOffThresholds>
+                                <Min Value="64"/>
+                                <Max Value="127"/>
+                            </MidiCCOnOffThresholds>
+                        </Speaker>
+                    </Mixer>
                 </DeviceChain>
             </MidiTrack>
             <MidiTrack Id="2">
@@ -228,6 +304,44 @@
                         <UpperDisplayString Value="None"/>
                         <LowerDisplayString Value=""/>
                     </MidiOutputRouting>
+                    <Mixer>
+                        <LastSelectedClipEnvelopeIndex Value="0"/>
+                        <LastSelectedTimeableIndex Value="2"/>
+                        <LomId Value="0"/>
+                        <LomIdView Value="0"/>
+                        <PanMode Value="0"/>
+                        <ViewStateSesstionTrackWidth Value="93"/>
+                        <ParametersListWrapper LomId="0"/>
+                        <SendsListWrapper LomId="0"/>
+                        <IsExpanded Value="true"/>
+                        <IsFolded Value="false"/>
+                        <ShouldShowPresetName Value="false"/>
+                        <SoloSink Value="false"/>
+                        <Annotation Value=""/>
+                        <UserName Value=""/>
+                        <On>
+                            <LomId Value="0"/>
+                            <Manual Value="true"/>
+                            <AutomationTarget Id="484">
+                                <LockEnvelope Value="0"/>
+                            </AutomationTarget>
+                            <MidiCCOnOffThresholds>
+                                <Min Value="64"/>
+                                <Max Value="127"/>
+                            </MidiCCOnOffThresholds>
+                        </On>
+                        <Speaker>
+                            <LomId Value="0"/>
+                            <Manual Value="true"/>
+                            <AutomationTarget Id="485">
+                                <LockEnvelope Value="0"/>
+                            </AutomationTarget>
+                            <MidiCCOnOffThresholds>
+                                <Min Value="64"/>
+                                <Max Value="127"/>
+                            </MidiCCOnOffThresholds>
+                        </Speaker>
+                    </Mixer>
                 </DeviceChain>
             </MidiTrack>
             <MidiTrack Id="3">
@@ -288,6 +402,44 @@
                         <UpperDisplayString Value="None"/>
                         <LowerDisplayString Value=""/>
                     </MidiOutputRouting>
+                    <Mixer>
+                        <LastSelectedClipEnvelopeIndex Value="0"/>
+                        <LastSelectedTimeableIndex Value="0"/>
+                        <LomId Value="0"/>
+                        <LomIdView Value="0"/>
+                        <PanMode Value="0"/>
+                        <ViewStateSesstionTrackWidth Value="93"/>
+                        <ParametersListWrapper LomId="0"/>
+                        <SendsListWrapper LomId="0"/>
+                        <IsExpanded Value="true"/>
+                        <IsFolded Value="false"/>
+                        <ShouldShowPresetName Value="false"/>
+                        <SoloSink Value="false"/>
+                        <Annotation Value=""/>
+                        <UserName Value=""/>
+                        <On>
+                            <LomId Value="0"/>
+                            <Manual Value="true"/>
+                            <AutomationTarget Id="503">
+                                <LockEnvelope Value="0"/>
+                            </AutomationTarget>
+                            <MidiCCOnOffThresholds>
+                                <Min Value="64"/>
+                                <Max Value="127"/>
+                            </MidiCCOnOffThresholds>
+                        </On>
+                        <Speaker>
+                            <LomId Value="0"/>
+                            <Manual Value="true"/>
+                            <AutomationTarget Id="506">
+                                <LockEnvelope Value="0"/>
+                            </AutomationTarget>
+                            <MidiCCOnOffThresholds>
+                                <Min Value="64"/>
+                                <Max Value="127"/>
+                            </MidiCCOnOffThresholds>
+                        </Speaker>
+                    </Mixer>
                 </DeviceChain>
             </MidiTrack>
         </Tracks>
@@ -349,6 +501,46 @@
                     <UpperDisplayString Value="None"/>
                     <LowerDisplayString Value=""/>
                 </MidiOutputRouting>
+                <Mixer>
+                    <LastSelectedClipEnvelopeIndex Value="0"/>
+                    <LastSelectedTimeableIndex Value="2"/>
+                    <LomId Value="0"/>
+                    <LomIdView Value="0"/>
+                    <PanMode Value="0"/>
+                    <TempoAutomationViewBottom Value="60"/>
+                    <TempoAutomationViewTop Value="200"/>
+                    <ViewStateSesstionTrackWidth Value="93"/>
+                    <ParametersListWrapper LomId="0"/>
+                    <SendsListWrapper LomId="0"/>
+                    <IsExpanded Value="true"/>
+                    <IsFolded Value="false"/>
+                    <ShouldShowPresetName Value="false"/>
+                    <SoloSink Value="false"/>
+                    <Annotation Value=""/>
+                    <UserName Value=""/>
+                    <On>
+                        <LomId Value="0"/>
+                        <Manual Value="true"/>
+                        <AutomationTarget Id="1">
+                            <LockEnvelope Value="0"/>
+                        </AutomationTarget>
+                        <MidiCCOnOffThresholds>
+                            <Min Value="64"/>
+                            <Max Value="127"/>
+                        </MidiCCOnOffThresholds>
+                    </On>
+                    <Speaker>
+                        <LomId Value="0"/>
+                        <Manual Value="true"/>
+                        <AutomationTarget Id="2">
+                            <LockEnvelope Value="0"/>
+                        </AutomationTarget>
+                        <MidiCCOnOffThresholds>
+                            <Min Value="64"/>
+                            <Max Value="127"/>
+                        </MidiCCOnOffThresholds>
+                    </Speaker>
+                </Mixer>
             </DeviceChain>
         </MasterTrack>
         <PreHearTrack>
@@ -409,6 +601,44 @@
                     <UpperDisplayString Value="None"/>
                     <LowerDisplayString Value=""/>
                 </MidiOutputRouting>
+                <Mixer>
+                    <LastSelectedClipEnvelopeIndex Value="0"/>
+                    <LastSelectedTimeableIndex Value="0"/>
+                    <LomId Value="0"/>
+                    <LomIdView Value="0"/>
+                    <PanMode Value="0"/>
+                    <ViewStateSesstionTrackWidth Value="74"/>
+                    <ParametersListWrapper LomId="0"/>
+                    <SendsListWrapper LomId="0"/>
+                    <IsExpanded Value="true"/>
+                    <IsFolded Value="false"/>
+                    <ShouldShowPresetName Value="false"/>
+                    <SoloSink Value="false"/>
+                    <Annotation Value=""/>
+                    <UserName Value=""/>
+                    <On>
+                        <LomId Value="0"/>
+                        <Manual Value="true"/>
+                        <AutomationTarget Id="21">
+                            <LockEnvelope Value="0"/>
+                        </AutomationTarget>
+                        <MidiCCOnOffThresholds>
+                            <Min Value="64"/>
+                            <Max Value="127"/>
+                        </MidiCCOnOffThresholds>
+                    </On>
+                    <Speaker>
+                        <LomId Value="0"/>
+                        <Manual Value="true"/>
+                        <AutomationTarget Id="22">
+                            <LockEnvelope Value="0"/>
+                        </AutomationTarget>
+                        <MidiCCOnOffThresholds>
+                            <Min Value="64"/>
+                            <Max Value="127"/>
+                        </MidiCCOnOffThresholds>
+                    </Speaker>
+                </Mixer>
             </DeviceChain>
         </PreHearTrack>
         <ViewData Value="{}"/>

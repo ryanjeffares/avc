@@ -1,5 +1,5 @@
 #pragma once
-#include "SmallNodes.h"
+#include "Mixer.h"
 
 namespace avc {
 	namespace ableton_data_types {
@@ -14,6 +14,7 @@ namespace avc {
 			std::vector<std::unique_ptr<AutomationLane>> automationLanes;
 			std::unique_ptr<ClipEnvelopeChooserViewState> clipChooserViewState;
 			std::unique_ptr<Routing> audioInputRouting, audioOutputRouting, midiInputRouting, midiOutputRouting;
+			Mixer mixer;
 
 			void createXmlNode(XMLDocument& doc, XMLNode* parent) const {
 				auto node = doc.NewElement("DeviceChain");
@@ -31,6 +32,7 @@ namespace avc {
 				midiInputRouting->createXmlNode(doc, node);
 				audioOutputRouting->createXmlNode(doc, node);
 				midiOutputRouting->createXmlNode(doc, node);
+				mixer.createXmlNode(doc, node);
 
 				parent->InsertEndChild(node);
 			}

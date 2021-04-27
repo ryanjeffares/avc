@@ -14,9 +14,6 @@
 #include <vector>
 #include <memory>
 #include <utility>
-#include <boost/iostreams/filter/gzip.hpp>
-#include <boost/iostreams/filtering_streambuf.hpp>
-#include <boost/iostreams/copy.hpp>
 #include "../deps/tinyxml2/tinyxml2.h"
 
 #define DBG(fmt, ...) \
@@ -27,4 +24,6 @@
             do { fprintf(stderr, fmt "\n", __VA_ARGS__); } while (0)
 
 #endif  // #ifndef AVC
-// TODO: Locators, GroovePool, DetailClipKeyMidis
+// TODO: Find out what Locators, GroovePool, DetailClipKeyMidis are in main element list
+//       Find out what LastPresetRef and SourceContext is in Track->DeviceChain->Mixer
+//       Figure out differences in Mixer Nodes between MIDI, Audio, Master, Send, Pre Hear tracks AAAAAAAAA

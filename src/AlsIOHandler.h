@@ -1,4 +1,7 @@
 #pragma once
+#include <boost/iostreams/filter/gzip.hpp>
+#include <boost/iostreams/filtering_streambuf.hpp>
+#include <boost/iostreams/copy.hpp>
 #include "AbletonLiveSet.h"
 
 namespace avc {
@@ -12,7 +15,7 @@ namespace avc {
 	public:
 
 		AlsIOHandler(std::string ip, std::string xmlPath);
-		~AlsIOHandler();
+		~AlsIOHandler() {}
 		
 		void decompress();
 		void storeXmlData();
