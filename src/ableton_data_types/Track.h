@@ -68,7 +68,7 @@ namespace avc {
 				vdEl->SetAttribute("Value", viewData.c_str());
 				trackDelay->createXmlNode(doc, node);
 				name->createXmlNode(doc, node);
-				deviceChain.createXmlNode(doc, node);					
+				deviceChain.createXmlNode(doc, node, type == MASTER_TRACK);
 				parent->InsertEndChild(node);
 			}
 

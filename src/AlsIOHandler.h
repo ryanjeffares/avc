@@ -29,6 +29,8 @@ namespace avc {
 		void getTrackInfo(Track* track, XMLNode* node);
 		void getMasterTrack(XMLElement* node);
 		void getPreHearTrack(XMLElement* node);
+		void getDeviceChain(DeviceChain& deviceChain, XMLNode* node);
+		void getMixer(Mixer& deviceChaine, XMLNode* node);
 
 		const std::string inputPath, outputPath;
 		std::string setName;

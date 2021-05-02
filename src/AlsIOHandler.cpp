@@ -107,7 +107,7 @@ namespace avc {
 			else {
 				try {
 					auto it = std::find(nodeNames.begin(), nodeNames.end(), std::string(currentElement->Name()));
-					int idx = it - nodeNames.begin();
+					auto idx = it - nodeNames.begin();
 					switch (idx) {
 						case 0: {
 							currentElement->FirstChildElement()->QueryIntAttribute("Value", &(abletonLiveSet->autoColourPickerPlayerTracks));
@@ -225,12 +225,12 @@ namespace avc {
 				abletonLiveSet->tracks.push_back(track);
 			}
 			else if (strcmp(currentElement->Name(), "AudioTrack") == 0) {
-				auto track = std::make_shared<Track>(id, Track::TrackType::MIDI_TRACK);
+				auto track = std::make_shared<Track>(id, Track::TrackType::AUDIO_TRACK);
 				getTrackInfo(track.get(), currentElement);
 				abletonLiveSet->tracks.push_back(track);
 			}
 			else if (strcmp(currentElement->Name(), "ReturnTrack") == 0) {
-				auto track = std::make_shared<Track>(id, Track::TrackType::MIDI_TRACK);
+				auto track = std::make_shared<Track>(id, Track::TrackType::RETURN_TRACK);
 				getTrackInfo(track.get(), currentElement);
 				abletonLiveSet->tracks.push_back(track);
 			}
@@ -294,173 +294,11 @@ namespace avc {
 					track->name = std::make_unique<Name>(std::string(en), std::string(un), std::string(an), std::string(mn));
 				}
 				else if (strcmp(currentElement->Name(), "DeviceChain") == 0) {
-					std::vector<std::string> nodeNames = {
-						"AutomationLanes", "ClipEnvelopeChooserViewState", "AudioInputRouting", "MidiInputRouting", "AudioOutputRouting", "MidiOutputRouting", "Mixer"
-					};
-					auto el = currentElement->FirstChildElement();
-					while (el != nullptr) {
-						auto it = std::find(nodeNames.begin(), nodeNames.end(), std::string(el->Name()));
-						auto idx = it - nodeNames.begin();
-						switch (idx) {
-							case 0: {
-								auto automationLanesNode = el->FirstChildElement("AutomationLanes");
-								auto automationLane = automationLanesNode->FirstChildElement();
-								while (automationLane != nullptr) {
-									int id, sd, se, lh;
-									bool cs;
-									automationLane->QueryIntAttribute("Id", &id);
-									automationLane->FirstChildElement("SelectedDevice")->QueryIntAttribute("Value", &sd);
-									automationLane->FirstChildElement("SelectedEnvelope")->QueryIntAttribute("Value", &se);
-									automationLane->FirstChildElement("IsContentSelected")->QueryBoolAttribute("Value", &cs);
-									automationLane->FirstChildElement("LaneHeight")->QueryIntAttribute("Value", &lh);
-									track->deviceChain.automationLanes.push_back(std::make_unique<AutomationLane>(id, sd, se, lh, cs));
-									automationLane = automationLane->NextSiblingElement();
-								}
-								bool folded;
-								el->FirstChildElement("AreAdditionalAutomationLanesFolded")->QueryBoolAttribute("Value", &folded);
-								track->deviceChain.lanesFolded = folded;
-								break;
-							}
-							case 1: {
-								int sd, se;
-								bool mv;
-								el->FirstChildElement("SelectedDevice")->QueryIntAttribute("Value", &sd);
-								el->FirstChildElement("SelectedEnvelope")->QueryIntAttribute("Value", &se);
-								el->FirstChildElement("PreferModulationVisible")->QueryBoolAttribute("Value", &mv);
-								track->deviceChain.clipChooserViewState = std::make_unique<ClipEnvelopeChooserViewState>(sd, se, mv);
-								break;
-							}
-							case 2:
-							case 3:
-							case 4:
-							case 5: {
-								Routing::RoutingType type = (Routing::RoutingType)(idx - 2);
-								const char* t;
-								const char* u;
-								const char* l;
-								el->FirstChildElement("Target")->QueryStringAttribute("Value", &t);
-								el->FirstChildElement("UpperDisplayString")->QueryStringAttribute("Value", &u);
-								el->FirstChildElement("LowerDisplayString")->QueryStringAttribute("Value", &l);
-								switch (idx) {
-									case 2:
-										track->deviceChain.audioInputRouting = std::make_unique<Routing>(t, u, l, type);
-										break;
-									case 3:
-										track->deviceChain.midiInputRouting = std::make_unique<Routing>(t, u, l, type);
-										break;
-									case 4:
-										track->deviceChain.audioOutputRouting = std::make_unique<Routing>(t, u, l, type);
-										break;
-									case 5:
-										track->deviceChain.midiOutputRouting = std::make_unique<Routing>(t, u, l, type);
-										break;
-									}
-								break;
-							}
-							case 6: {
-								std::vector<std::string> mixerNodeNames = {
-									"On", "Speaker", "Pan", "SplitStereoPanL", "SplitStereoPanR", 
-									"Volume", "CrossFadeState", "Tempo", "TimeSignature", "GlobalGrooveAmount", "CrossFade"
-								};
-								auto innerEl = el->FirstChildElement();
-								while (innerEl != nullptr) {
-									if (innerEl->NoChildren()) {
-										bool bVal;
-										int iVal;
-										const char* sVal;										
-										if (innerEl->QueryIntAttribute("Value", &iVal) == XML_SUCCESS) {
-											track->deviceChain.mixer.intValues.emplace(innerEl->Name(), iVal);
-										}
-										else if (innerEl->QueryIntAttribute("LomId", &iVal) == XML_SUCCESS) {
-											track->deviceChain.mixer.intValuesLomId.emplace(innerEl->Name(), iVal);
-										}
-										else if (innerEl->QueryBoolAttribute("Value", &bVal) == XML_SUCCESS) {
-											track->deviceChain.mixer.boolValues.emplace(innerEl->Name(), bVal);
-										}
-										else if (innerEl->QueryStringAttribute("Value", &sVal) == XML_SUCCESS) {
-											track->deviceChain.mixer.stringValues.emplace(innerEl->Name(), sVal);
-										}
-										else {
-											LOG("Unable to parse element %s from track, ID %Id", innerEl->Name(), track->id);
-										}
-									}
-									else {
-										int lomId, automationTarget, lockEnvelope;
-										innerEl->FirstChildElement("LomId")->QueryIntAttribute("Value", &lomId);										
-										innerEl->FirstChildElement("AutomationTarget")->QueryIntAttribute("Id", &automationTarget);
-										innerEl->FirstChildElement("AutomationTarget")->FirstChildElement("LockEnvelope")->QueryIntAttribute("Value", &lockEnvelope);
-										auto mixerIt = std::find(mixerNodeNames.begin(), mixerNodeNames.end(), std::string(innerEl->Name()));
-										auto mixerIdx = mixerIt - mixerNodeNames.begin();
-										switch (mixerIdx) {
-											case 0: {
-												innerEl->FirstChildElement("Manual")->QueryBoolAttribute("Value", &(track->deviceChain.mixer.on.manualBool));
-												innerEl->FirstChildElement("MidiCCOnOffThresholds")->FirstChildElement("Min")->QueryIntAttribute("Value", &(track->deviceChain.mixer.on.midiCcMin));
-												innerEl->FirstChildElement("MidiCCOnOffThresholds")->FirstChildElement("Max")->QueryIntAttribute("Value", &(track->deviceChain.mixer.on.midiCcMax));
-												track->deviceChain.mixer.on.lomId = lomId;
-												track->deviceChain.mixer.on.automationTarget = automationTarget;
-												track->deviceChain.mixer.on.lockEnvelope = lockEnvelope;
-												break;
-											}											
-											case 1: {
-												innerEl->FirstChildElement("Manual")->QueryBoolAttribute("Value", &(track->deviceChain.mixer.speaker.manualBool));
-												innerEl->FirstChildElement("MidiCCOnOffThresholds")->FirstChildElement("Min")->QueryIntAttribute("Value", &(track->deviceChain.mixer.speaker.midiCcMin));
-												innerEl->FirstChildElement("MidiCCOnOffThresholds")->FirstChildElement("Max")->QueryIntAttribute("Value", &(track->deviceChain.mixer.speaker.midiCcMax));
-												track->deviceChain.mixer.speaker.lomId = lomId;
-												track->deviceChain.mixer.speaker.automationTarget = automationTarget;
-												track->deviceChain.mixer.speaker.lockEnvelope = lockEnvelope;
-												break;
-											}
-											case 2: {
-												innerEl->FirstChildElement("Manual")->QueryIntAttribute("Value", &(track->deviceChain.mixer.pan.manualInt));
-												innerEl->FirstChildElement("MidiControllerRange")->FirstChildElement("Min")->QueryIntAttribute("Value", &(track->deviceChain.mixer.pan.midiMin));
-												innerEl->FirstChildElement("MidiControllerRange")->FirstChildElement("Max")->QueryIntAttribute("Value", &(track->deviceChain.mixer.pan.midiMax));
-												innerEl->FirstChildElement("ModulationTarget")->QueryIntAttribute("Id", &(track->deviceChain.mixer.pan.modulationTarget));
-												innerEl->FirstChildElement("ModulationTarget")->FirstChildElement("LockEnvelope")->QueryIntAttribute("Value", &(track->deviceChain.mixer.pan.modLockEnvelope));
-												track->deviceChain.mixer.pan.lomId = lomId;
-												track->deviceChain.mixer.pan.automationTarget = automationTarget;
-												track->deviceChain.mixer.pan.lockEnvelope = lockEnvelope;
-												break;
-											}
-											case 3: {
-												innerEl->FirstChildElement("Manual")->QueryIntAttribute("Value", &(track->deviceChain.mixer.splitStereoL.manualInt));
-												innerEl->FirstChildElement("MidiControllerRange")->FirstChildElement("Min")->QueryIntAttribute("Value", &(track->deviceChain.mixer.splitStereoL.midiMin));
-												innerEl->FirstChildElement("MidiControllerRange")->FirstChildElement("Max")->QueryIntAttribute("Value", &(track->deviceChain.mixer.splitStereoL.midiMax));
-												innerEl->FirstChildElement("ModulationTarget")->QueryIntAttribute("Id", &(track->deviceChain.mixer.splitStereoL.modulationTarget));
-												innerEl->FirstChildElement("ModulationTarget")->FirstChildElement("LockEnvelope")->QueryIntAttribute("Value", &(track->deviceChain.mixer.splitStereoL.modLockEnvelope));
-												track->deviceChain.mixer.splitStereoL.lomId = lomId;
-												track->deviceChain.mixer.splitStereoL.automationTarget = automationTarget;
-												track->deviceChain.mixer.splitStereoL.lockEnvelope = lockEnvelope;
-												break;
-											}
-											case 4: {
-												innerEl->FirstChildElement("Manual")->QueryIntAttribute("Value", &(track->deviceChain.mixer.splitStereoR.manualInt));
-												innerEl->FirstChildElement("MidiControllerRange")->FirstChildElement("Min")->QueryIntAttribute("Value", &(track->deviceChain.mixer.splitStereoR.midiMin));
-												innerEl->FirstChildElement("MidiControllerRange")->FirstChildElement("Max")->QueryIntAttribute("Value", &(track->deviceChain.mixer.splitStereoR.midiMax));
-												innerEl->FirstChildElement("ModulationTarget")->QueryIntAttribute("Id", &(track->deviceChain.mixer.splitStereoR.modulationTarget));
-												innerEl->FirstChildElement("ModulationTarget")->FirstChildElement("LockEnvelope")->QueryIntAttribute("Value", &(track->deviceChain.mixer.splitStereoR.modLockEnvelope));
-												track->deviceChain.mixer.splitStereoR.lomId = lomId;
-												track->deviceChain.mixer.splitStereoR.automationTarget = automationTarget;
-												track->deviceChain.mixer.splitStereoR.lockEnvelope = lockEnvelope;
-												break;
-											}
-											case 5: {
-												innerEl->FirstChildElement("Manual")->QueryIntAttribute("Value", &(track->deviceChain.mixer.volume.manualInt));
-												innerEl->FirstChildElement("MidiControllerRange")->FirstChildElement("Min")->QueryDoubleAttribute("Value", &(track->deviceChain.mixer.volume.midiMin));
-												innerEl->FirstChildElement("MidiControllerRange")->FirstChildElement("Max")->QueryDoubleAttribute("Value", &(track->deviceChain.mixer.volume.midiMax));
-												innerEl->FirstChildElement("ModulationTarget")->QueryIntAttribute("Id", &(track->deviceChain.mixer.volume.modTarget));
-												innerEl->FirstChildElement("ModulationTarget")->FirstChildElement("LockEnvelope")->QueryIntAttribute("Value", &(track->deviceChain.mixer.volume.modLockEnv));
-												track->deviceChain.mixer.volume.lomId = lomId;
-												track->deviceChain.mixer.volume.automationTarget = automationTarget;
-												track->deviceChain.mixer.volume.lockEnvelope = lockEnvelope;
-											}
-										}										
-									}
-									innerEl = innerEl->NextSiblingElement();
-								}
-								break;
-							}
-						}
-						el = el->NextSiblingElement();
+					try {
+						getDeviceChain(track->deviceChain, currentElement);
+					}					
+					catch (const std::exception& e) {
+						DBG("Error occured calling getDeviceChain: %s", e.what());
 					}
 				}
 				else {
@@ -471,12 +309,267 @@ namespace avc {
 		}
 	}
 
+	void AlsIOHandler::getDeviceChain(DeviceChain& deviceChain, XMLNode* node) {
+		std::vector<std::string> nodeNames = {
+			"AutomationLanes", "ClipEnvelopeChooserViewState", "AudioInputRouting", 
+			"MidiInputRouting", "AudioOutputRouting", "MidiOutputRouting", "Mixer"
+		};
+		auto el = node->FirstChildElement();
+		while (el != nullptr) {
+			auto it = std::find(nodeNames.begin(), nodeNames.end(), std::string(el->Name()));
+			auto idx = it - nodeNames.begin();
+			switch (idx) {
+				case 0: {
+					auto automationLanesNode = el->FirstChildElement("AutomationLanes");
+					auto automationLane = automationLanesNode->FirstChildElement();
+					while (automationLane != nullptr) {
+						int id, sd, se, lh;
+						bool cs;
+						automationLane->QueryIntAttribute("Id", &id);
+						automationLane->FirstChildElement("SelectedDevice")->QueryIntAttribute("Value", &sd);
+						automationLane->FirstChildElement("SelectedEnvelope")->QueryIntAttribute("Value", &se);
+						automationLane->FirstChildElement("IsContentSelected")->QueryBoolAttribute("Value", &cs);
+						automationLane->FirstChildElement("LaneHeight")->QueryIntAttribute("Value", &lh);
+						deviceChain.automationLanes.push_back(std::make_unique<AutomationLane>(id, sd, se, lh, cs));
+						automationLane = automationLane->NextSiblingElement();
+					}
+					bool folded;
+					el->FirstChildElement("AreAdditionalAutomationLanesFolded")->QueryBoolAttribute("Value", &folded);
+					deviceChain.lanesFolded = folded;
+					break;
+				}
+				case 1: {
+					int sd, se;
+					bool mv;
+					el->FirstChildElement("SelectedDevice")->QueryIntAttribute("Value", &sd);
+					el->FirstChildElement("SelectedEnvelope")->QueryIntAttribute("Value", &se);
+					el->FirstChildElement("PreferModulationVisible")->QueryBoolAttribute("Value", &mv);
+					deviceChain.clipChooserViewState = std::make_unique<ClipEnvelopeChooserViewState>(sd, se, mv);
+					break;
+				}
+				case 2:
+				case 3:
+				case 4:
+				case 5: {
+					Routing::RoutingType type = (Routing::RoutingType)(idx - 2);
+					const char* t;
+					const char* u;
+					const char* l;
+					el->FirstChildElement("Target")->QueryStringAttribute("Value", &t);
+					el->FirstChildElement("UpperDisplayString")->QueryStringAttribute("Value", &u);
+					el->FirstChildElement("LowerDisplayString")->QueryStringAttribute("Value", &l);
+					switch (idx) {
+						case 2:
+							deviceChain.audioInputRouting = std::make_unique<Routing>(t, u, l, type);
+							break;
+						case 3:
+							deviceChain.midiInputRouting = std::make_unique<Routing>(t, u, l, type);
+							break;
+						case 4:
+							deviceChain.audioOutputRouting = std::make_unique<Routing>(t, u, l, type);
+							break;
+						case 5:
+							deviceChain.midiOutputRouting = std::make_unique<Routing>(t, u, l, type);
+							break;
+					}
+					break;
+				}
+				case 6: {
+					getMixer(deviceChain.mixer, el);				
+					break;
+				}
+			}
+			el = el->NextSiblingElement();
+		}
+	}
+
+	void AlsIOHandler::getMixer(Mixer& mixer, XMLNode* node) {
+		std::vector<std::string> mixerNodeNames = {
+			"On", "Speaker", "Pan", "SplitStereoPanL", "SplitStereoPanR",
+			"Volume", "CrossFadeState", "Tempo", "TimeSignature", 
+			"GlobalGrooveAmount", "CrossFade"
+		};
+		auto innerEl = node->FirstChildElement();
+		while (innerEl != nullptr) {
+			if (innerEl->NoChildren()) {
+				bool bVal;
+				int iVal;
+				const char* sVal;
+				if (innerEl->QueryIntAttribute("Value", &iVal) == XML_SUCCESS) {
+					mixer.intValues.emplace(innerEl->Name(), iVal);
+				}
+				else if (innerEl->QueryIntAttribute("LomId", &iVal) == XML_SUCCESS) {
+					mixer.intValuesLomId.emplace(innerEl->Name(), iVal);
+				}
+				else if (innerEl->QueryBoolAttribute("Value", &bVal) == XML_SUCCESS) {
+					mixer.boolValues.emplace(innerEl->Name(), bVal);
+				}
+				else if (innerEl->QueryStringAttribute("Value", &sVal) == XML_SUCCESS) {
+					mixer.stringValues.emplace(innerEl->Name(), sVal);
+				}
+				else {
+					DBG("Unable to parse element %s from track", innerEl->Name());
+				}
+			}
+			else {
+				if (strcmp(innerEl->Name(), "SourceContext") == 0 || strcmp(innerEl->Name(), "LastPresetRef") == 0) {
+					DBG("Skipping %s", innerEl->Name());
+				}
+				else if (strcmp(innerEl->Name(), "Sends") == 0) {
+					auto holderEl = innerEl->FirstChildElement();
+					while (holderEl != nullptr) {
+						int id;
+						holderEl->QueryIntAttribute("Id", &id);
+						auto send = std::make_shared<ableton_data_types::Mixer::Send>(id);
+						auto sendEl = holderEl->FirstChildElement();
+						sendEl->FirstChildElement("LomId")->QueryIntAttribute("Value", &send->lomId);
+						sendEl->FirstChildElement("AutomationTarget")->QueryIntAttribute("Id", &send->automationTarget);
+						sendEl->FirstChildElement("AutomationTarget")->FirstChildElement("LockEnvelope")->QueryIntAttribute("Value", &send->lockEnvelope);
+						sendEl->FirstChildElement("Manual")->QueryDoubleAttribute("Value", &(send->manualDouble));
+						sendEl->FirstChildElement("MidiControllerRange")->FirstChildElement("Min")->QueryDoubleAttribute("Value", &(send->midiMin));
+						sendEl->FirstChildElement("MidiControllerRange")->FirstChildElement("Max")->QueryDoubleAttribute("Value", &(send->midiMax));
+						sendEl->FirstChildElement("ModulationTarget")->QueryIntAttribute("Id", &(send->modulationTarget));
+						sendEl->FirstChildElement("ModulationTarget")->FirstChildElement("LockEnvelope")->QueryIntAttribute("Value", &(send->modLockEnvelope));
+						mixer.sends.push_back(send);
+						holderEl = holderEl->NextSiblingElement();
+					}
+				}
+				else {
+					int lomId, automationTarget, lockEnvelope;
+					innerEl->FirstChildElement("LomId")->QueryIntAttribute("Value", &lomId);
+					innerEl->FirstChildElement("AutomationTarget")->QueryIntAttribute("Id", &automationTarget);
+					innerEl->FirstChildElement("AutomationTarget")->FirstChildElement("LockEnvelope")->QueryIntAttribute("Value", &lockEnvelope);
+					auto mixerIt = std::find(mixerNodeNames.begin(), mixerNodeNames.end(), std::string(innerEl->Name()));
+					auto mixerIdx = mixerIt - mixerNodeNames.begin();
+					switch (mixerIdx) {
+						case 0: {	// On
+							innerEl->FirstChildElement("Manual")->QueryBoolAttribute("Value", &(mixer.on.manualBool));
+							innerEl->FirstChildElement("MidiCCOnOffThresholds")->FirstChildElement("Min")->QueryIntAttribute("Value", &(mixer.on.midiCcMin));
+							innerEl->FirstChildElement("MidiCCOnOffThresholds")->FirstChildElement("Max")->QueryIntAttribute("Value", &(mixer.on.midiCcMax));
+							mixer.on.lomId = lomId;
+							mixer.on.automationTarget = automationTarget;
+							mixer.on.lockEnvelope = lockEnvelope;
+							break;
+						}
+						case 1: {	// Speaker
+							innerEl->FirstChildElement("Manual")->QueryBoolAttribute("Value", &(mixer.speaker.manualBool));
+							innerEl->FirstChildElement("MidiCCOnOffThresholds")->FirstChildElement("Min")->QueryIntAttribute("Value", &(mixer.speaker.midiCcMin));
+							innerEl->FirstChildElement("MidiCCOnOffThresholds")->FirstChildElement("Max")->QueryIntAttribute("Value", &(mixer.speaker.midiCcMax));
+							mixer.speaker.lomId = lomId;
+							mixer.speaker.automationTarget = automationTarget;
+							mixer.speaker.lockEnvelope = lockEnvelope;
+							break;
+						}
+						case 2: {	// Pan
+							innerEl->FirstChildElement("Manual")->QueryDoubleAttribute("Value", &(mixer.pan.manualDouble));
+							innerEl->FirstChildElement("MidiControllerRange")->FirstChildElement("Min")->QueryDoubleAttribute("Value", &(mixer.pan.midiMin));
+							innerEl->FirstChildElement("MidiControllerRange")->FirstChildElement("Max")->QueryDoubleAttribute("Value", &(mixer.pan.midiMax));
+							innerEl->FirstChildElement("ModulationTarget")->QueryIntAttribute("Id", &(mixer.pan.modulationTarget));
+							innerEl->FirstChildElement("ModulationTarget")->FirstChildElement("LockEnvelope")->QueryIntAttribute("Value", &(mixer.pan.modLockEnvelope));
+							mixer.pan.lomId = lomId;
+							mixer.pan.automationTarget = automationTarget;
+							mixer.pan.lockEnvelope = lockEnvelope;
+							break;
+						}
+						case 3: {	// SplitStereoPanL
+							innerEl->FirstChildElement("Manual")->QueryDoubleAttribute("Value", &(mixer.splitStereoL.manualDouble));
+							innerEl->FirstChildElement("MidiControllerRange")->FirstChildElement("Min")->QueryDoubleAttribute("Value", &(mixer.splitStereoL.midiMin));
+							innerEl->FirstChildElement("MidiControllerRange")->FirstChildElement("Max")->QueryDoubleAttribute("Value", &(mixer.splitStereoL.midiMax));
+							innerEl->FirstChildElement("ModulationTarget")->QueryIntAttribute("Id", &(mixer.splitStereoL.modulationTarget));
+							innerEl->FirstChildElement("ModulationTarget")->FirstChildElement("LockEnvelope")->QueryIntAttribute("Value", &(mixer.splitStereoL.modLockEnvelope));
+							mixer.splitStereoL.lomId = lomId;
+							mixer.splitStereoL.automationTarget = automationTarget;
+							mixer.splitStereoL.lockEnvelope = lockEnvelope;
+							break;
+						}
+						case 4: {	// SplitStereoPanR
+							innerEl->FirstChildElement("Manual")->QueryDoubleAttribute("Value", &(mixer.splitStereoR.manualDouble));
+							innerEl->FirstChildElement("MidiControllerRange")->FirstChildElement("Min")->QueryDoubleAttribute("Value", &(mixer.splitStereoR.midiMin));
+							innerEl->FirstChildElement("MidiControllerRange")->FirstChildElement("Max")->QueryDoubleAttribute("Value", &(mixer.splitStereoR.midiMax));
+							innerEl->FirstChildElement("ModulationTarget")->QueryIntAttribute("Id", &(mixer.splitStereoR.modulationTarget));
+							innerEl->FirstChildElement("ModulationTarget")->FirstChildElement("LockEnvelope")->QueryIntAttribute("Value", &(mixer.splitStereoR.modLockEnvelope));
+							mixer.splitStereoR.lomId = lomId;
+							mixer.splitStereoR.automationTarget = automationTarget;
+							mixer.splitStereoR.lockEnvelope = lockEnvelope;
+							break;
+						}
+						case 5: {	// Volume
+							innerEl->FirstChildElement("Manual")->QueryDoubleAttribute("Value", &(mixer.volume.manualDouble));
+							innerEl->FirstChildElement("MidiControllerRange")->FirstChildElement("Min")->QueryDoubleAttribute("Value", &(mixer.volume.midiMin));
+							innerEl->FirstChildElement("MidiControllerRange")->FirstChildElement("Max")->QueryDoubleAttribute("Value", &(mixer.volume.midiMax));
+							innerEl->FirstChildElement("ModulationTarget")->QueryIntAttribute("Id", &(mixer.volume.modTarget));
+							innerEl->FirstChildElement("ModulationTarget")->FirstChildElement("LockEnvelope")->QueryIntAttribute("Value", &(mixer.volume.modLockEnv));
+							mixer.volume.lomId = lomId;
+							mixer.volume.automationTarget = automationTarget;
+							mixer.volume.lockEnvelope = lockEnvelope;
+							break;
+						}
+						case 6: {	// CrossFadeState
+							innerEl->FirstChildElement("Manual")->QueryDoubleAttribute("Value", &(mixer.crosssfadeState.manualDouble));
+							mixer.crosssfadeState.lomId = lomId;
+							mixer.crosssfadeState.automationTarget = automationTarget;
+							mixer.crosssfadeState.lockEnvelope = lockEnvelope;
+							break;
+						}
+						case 7: {	// Tempo
+							innerEl->FirstChildElement("Manual")->QueryDoubleAttribute("Value", &(mixer.tempo.manualDouble));
+							innerEl->FirstChildElement("MidiControllerRange")->FirstChildElement("Min")->QueryDoubleAttribute("Value", &(mixer.tempo.midiMin));
+							innerEl->FirstChildElement("MidiControllerRange")->FirstChildElement("Max")->QueryDoubleAttribute("Value", &(mixer.tempo.midiMax));
+							innerEl->FirstChildElement("ModulationTarget")->QueryIntAttribute("Id", &(mixer.tempo.modulationTarget));
+							innerEl->FirstChildElement("ModulationTarget")->FirstChildElement("LockEnvelope")->QueryIntAttribute("Value", &(mixer.tempo.modLockEnvelope));
+							mixer.tempo.lomId = lomId;
+							mixer.tempo.automationTarget = automationTarget;
+							mixer.tempo.lockEnvelope = lockEnvelope;
+							break;
+						}
+						case 8: {	// TimeSignature
+							innerEl->FirstChildElement("Manual")->QueryDoubleAttribute("Value", &(mixer.timeSignature.manualDouble));
+							mixer.timeSignature.lomId = lomId;
+							mixer.timeSignature.automationTarget = automationTarget;
+							mixer.timeSignature.lockEnvelope = lockEnvelope;
+						}
+						case 9: {	// GlobalGrooveAmount
+							innerEl->FirstChildElement("Manual")->QueryDoubleAttribute("Value", &(mixer.globalGrooveAmount.manualDouble));
+							innerEl->FirstChildElement("MidiControllerRange")->FirstChildElement("Min")->QueryDoubleAttribute("Value", &(mixer.globalGrooveAmount.midiMin));
+							innerEl->FirstChildElement("MidiControllerRange")->FirstChildElement("Max")->QueryDoubleAttribute("Value", &(mixer.globalGrooveAmount.midiMax));
+							innerEl->FirstChildElement("ModulationTarget")->QueryIntAttribute("Id", &(mixer.globalGrooveAmount.modulationTarget));
+							innerEl->FirstChildElement("ModulationTarget")->FirstChildElement("LockEnvelope")->QueryIntAttribute("Value", &(mixer.globalGrooveAmount.modLockEnvelope));
+							mixer.globalGrooveAmount.lomId = lomId;
+							mixer.globalGrooveAmount.automationTarget = automationTarget;
+							mixer.globalGrooveAmount.lockEnvelope = lockEnvelope;
+							break;
+						}
+						case 10: {	// CrossFade
+							innerEl->FirstChildElement("Manual")->QueryDoubleAttribute("Value", &(mixer.crossFade.manualDouble));
+							innerEl->FirstChildElement("MidiControllerRange")->FirstChildElement("Min")->QueryDoubleAttribute("Value", &(mixer.crossFade.midiMin));
+							innerEl->FirstChildElement("MidiControllerRange")->FirstChildElement("Max")->QueryDoubleAttribute("Value", &(mixer.crossFade.midiMax));
+							innerEl->FirstChildElement("ModulationTarget")->QueryIntAttribute("Id", &(mixer.crossFade.modulationTarget));
+							innerEl->FirstChildElement("ModulationTarget")->FirstChildElement("LockEnvelope")->QueryIntAttribute("Value", &(mixer.crossFade.modLockEnvelope));
+							mixer.crossFade.lomId = lomId;
+							mixer.crossFade.automationTarget = automationTarget;
+							mixer.crossFade.lockEnvelope = lockEnvelope;
+							break;
+						}
+					}
+				}
+			}
+			innerEl = innerEl->NextSiblingElement();
+		}
+	}
+
 	void AlsIOHandler::writeToXml() {
-		DBG("Writing...");
+		if (AVC_DEBUG) {
+			DBG("Writing...");
+		}		
 		XMLDocument xmlDoc;
 		auto decl = xmlDoc.NewDeclaration();
 		xmlDoc.InsertEndChild(decl);
-		abletonLiveSet->createXmlNode(xmlDoc);
+		try {
+			abletonLiveSet->createXmlNode(xmlDoc);
+		}		
+		catch (const std::exception& e) {
+			DBG("Error occured in writeToXml: %s", e.what());
+		}
 		xmlDoc.SaveFile((outputPath + ".new.xml").c_str());
 	}
 

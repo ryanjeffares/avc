@@ -12,13 +12,15 @@ namespace avc {
 			virtual void createXmlNode(XMLDocument& doc, XMLNode* parent) const = 0;
 		};
 
-		struct AbletonHeader
+		struct AbletonHeader : public virtual SmallNode
 		{
 			const int majorVersion, schemaChangeCount;
 			const std::string minorVersion, creator, revision;
 
 			AbletonHeader(int majVer, std::string minVer, int schem, std::string cr, std::string rev)
 				: majorVersion(majVer), minorVersion(minVer), schemaChangeCount(schem), creator(cr), revision(rev) {}
+
+			void createXmlNode(XMLDocument& doc, XMLNode* parent) const override {}
 		};
 
 		struct ContentSplitterProperties : public virtual SmallNode
@@ -280,7 +282,7 @@ namespace avc {
 					name = "MidiOutputRouting";
 					break;
 				default:
-					if (_DEBUG) {
+					if (AVC_DEBUG) {
 						DBG("No RoutingType initialised, returning...");
 					}					
 					return;

@@ -16,7 +16,7 @@ namespace avc {
 			std::unique_ptr<Routing> audioInputRouting, audioOutputRouting, midiInputRouting, midiOutputRouting;
 			Mixer mixer;
 
-			void createXmlNode(XMLDocument& doc, XMLNode* parent) const {
+			void createXmlNode(XMLDocument& doc, XMLNode* parent, bool isMaster) const {
 				auto node = doc.NewElement("DeviceChain");
 				auto automationLanesEl = doc.NewElement("AutomationLanes");
 				auto automationLanesElInner = automationLanesEl->InsertNewChildElement("AutomationLanes");
@@ -32,7 +32,7 @@ namespace avc {
 				midiInputRouting->createXmlNode(doc, node);
 				audioOutputRouting->createXmlNode(doc, node);
 				midiOutputRouting->createXmlNode(doc, node);
-				mixer.createXmlNode(doc, node);
+				mixer.createXmlNode(doc, node, isMaster);
 
 				parent->InsertEndChild(node);
 			}

@@ -17,15 +17,24 @@ int main(int argc, char* argv[])
 		return 0;
 	}
 	else {
-		auto output = path;
-		output.erase(output.end() - 4, output.end());
-		output += ".xml";
-		LOG("Output: %s", output.c_str());
-		avc::AlsIOHandler ioHandler(path, output);
-		ioHandler.decompress();
-		ioHandler.storeXmlData();
-		ioHandler.writeToXml();
-		ioHandler.writeToAls();
+		try {
+			auto output = path;
+			output.erase(output.end() - 4, output.end());
+			output += ".xml";
+			LOG("Output: %s", output.c_str());
+			avc::AlsIOHandler ioHandler(path, output);
+			LOG("Decompressing...");
+			ioHandler.decompress();
+			LOG("Parsing...");
+			ioHandler.storeXmlData();
+			LOG("Writing to XML...");
+			ioHandler.writeToXml();
+			LOG("Writin to ALS...");
+			ioHandler.writeToAls();
+		}		
+		catch (const std::exception& e) {
+			DBG("Error occured: %s", e.what());
+		}
 	}
 #ifdef _DEBUG
 	auto end = std::chrono::high_resolution_clock::now();

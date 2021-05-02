@@ -11,14 +11,15 @@ namespace avc {
 		{
 		public:
 
-			Mixer() : pan("Pan"), splitStereoL("SplitStereoPanL"), splitStereoR("SplitStereoPanR") {}
+			Mixer() : pan("Pan"), splitStereoL("SplitStereoPanL"), splitStereoR("SplitStereoPanR"), 
+				tempo("Tempo"), globalGrooveAmount("GlobalGrooveAmount"), crossFade("CrossFade") {}
 
 			struct SmallMixerNode : public virtual SmallNode
 			{
 				std::string name;
 				int lomId, automationTarget, lockEnvelope;
 				bool manualBool;
-				int manualInt;
+				double manualDouble;
 
 				void createXmlNode(XMLDocument& doc, XMLNode* parent) const override {
 					auto node = doc.NewElement(name.c_str());
@@ -29,7 +30,7 @@ namespace avc {
 						manualEl->SetAttribute("Value", manualBool);
 					}
 					else {
-						manualEl->SetAttribute("Value", manualInt);
+						manualEl->SetAttribute("Value", manualDouble);
 					}					
 					auto autoEl = node->InsertNewChildElement("AutomationTarget");
 					autoEl->SetAttribute("Id", automationTarget);
@@ -79,11 +80,12 @@ namespace avc {
 				}
 			};
 
-			struct Pan : public virtual SmallMixerNode
+			struct NodeWithControllerAndModulation : public virtual SmallMixerNode
 			{
-				int midiMin, midiMax, modulationTarget, modLockEnvelope;
+				double midiMin, midiMax;
+				int modulationTarget, modLockEnvelope;
 
-				Pan(std::string n) {
+				NodeWithControllerAndModulation(std::string n) {
 					name = n;
 				}
 
@@ -124,15 +126,57 @@ namespace avc {
 				}
 			};
 
+			struct CrossFadeState : public virtual SmallMixerNode
+			{
+				CrossFadeState() {
+					name = "CrossFadeState";
+				}
+			};
+
+			struct TimeSignature : public virtual SmallMixerNode
+			{
+				TimeSignature() {
+					name = "TimeSignature";
+				}
+			};
+
+			struct Send : public virtual SmallMixerNode
+			{
+				double midiMin, midiMax;
+				int modulationTarget, modLockEnvelope;
+				int sendHolderId;
+				bool active;
+
+				Send(int id) : sendHolderId(id) {
+					name = "Send";
+				}
+
+			protected:
+				void createAdditionalXmlElements(XMLElement* parent) const override {
+					auto midiEl = parent->InsertNewChildElement("MidiControllerRange");
+					auto minEl = midiEl->InsertNewChildElement("Min");
+					minEl->SetAttribute("Value", midiMin);
+					auto maxEl = midiEl->InsertNewChildElement("Max");
+					maxEl->SetAttribute("Value", midiMax);
+					auto modTargetEl = parent->InsertNewChildElement("ModulationTarget");
+					modTargetEl->SetAttribute("Id", modulationTarget);
+					auto modLockEl = modTargetEl->InsertNewChildElement("LockEnvelope");
+					modLockEl->SetAttribute("Value", modLockEnvelope);
+				}
+			};
+
 			std::map<std::string, int> intValues, intValuesLomId;
 			std::map<std::string, std::string> stringValues;
 			std::map<std::string, bool> boolValues;
+			std::vector<std::shared_ptr<Send>> sends;
 			On on;
 			Speaker speaker;
-			Pan pan, splitStereoL, splitStereoR;
+			NodeWithControllerAndModulation pan, splitStereoL, splitStereoR, tempo, globalGrooveAmount, crossFade;
 			Volume volume;
+			CrossFadeState crosssfadeState;
+			TimeSignature timeSignature;
 
-			void createXmlNode(XMLDocument& doc, XMLNode* parent) const {
+			void createXmlNode(XMLDocument& doc, XMLNode* parent, bool isMaster) const {
 				auto node = doc.NewElement("Mixer");
 				for (auto& i : intValues) {
 					auto el = node->InsertNewChildElement(i.first.c_str());
@@ -156,6 +200,23 @@ namespace avc {
 				splitStereoL.createXmlNode(doc, node);
 				splitStereoR.createXmlNode(doc, node);
 				volume.createXmlNode(doc, node);						
+				crosssfadeState.createXmlNode(doc, node);
+				if (isMaster) {					
+					tempo.createXmlNode(doc, node);
+					timeSignature.createXmlNode(doc, node);
+					globalGrooveAmount.createXmlNode(doc, node);
+					crossFade.createXmlNode(doc, node);
+				}
+				else {
+					auto sendNode = node->InsertNewChildElement("Sends");
+					for (auto& s : sends) {						
+						auto sendHolder = sendNode->InsertNewChildElement("TrackSendHolder");
+						sendHolder->SetAttribute("Id", s->sendHolderId);
+						s->createXmlNode(doc, sendHolder);
+						auto el = sendHolder->InsertNewChildElement("Active");
+						el->SetAttribute("Value", s->active);
+					}
+				}
 				parent->InsertEndChild(node);
 			}
 

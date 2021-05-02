@@ -16,8 +16,14 @@
 #include <utility>
 #include "../deps/tinyxml2/tinyxml2.h"
 
+#ifdef _DEBUG
+#define AVC_DEBUG 1
+#else
+#define AVC_DEBUG 0
+#endif
+
 #define DBG(fmt, ...) \
-            do { if (_DEBUG) fprintf(stderr, "%s:%d:%s(): " fmt "\n", __FILE__, \
+            do { if (AVC_DEBUG) fprintf(stderr, "%s:%d:%s(): " fmt "\n", __FILE__, \
                 __LINE__, __func__, __VA_ARGS__); } while (0)
 
 #define LOG(fmt, ...) \
